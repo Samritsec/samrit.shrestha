@@ -1,0 +1,160 @@
+{# app/templates/register/step3_payment.html #}
+{% extends "base.html" %}
+{% block content %}
+
+<div class="bg-grid"></div>
+<div class="bg-grid-mask"></div>
+
+<section class="payment-section">
+  <div class="container">
+    <h1 class="title">Complete Payment</h1>
+    <p class="subtitle">
+      You selected the <strong>{{ selected_plan.name if selected_plan else 'Unknown' }}</strong> plan —
+      <span class="muted">Price: {{ selected_plan.price if selected_plan else '0' }} USD / month</span>
+    </p>
+
+    <div class="plan-card">
+      <div class="plan-name">{{ selected_plan.name if selected_plan else 'Plan' }}</div>
+      <div class="plan-price">${{ selected_plan.price if selected_plan else '0' }}</div>
+      <div class="plan-features">
+        <strong>Includes:</strong>
+        <ul>
+          {% for f in selected_plan.features %}
+            <li>{{ f }}</li>
+          {% else %}
+            <li>Standard features</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <!-- NOTE: novalidate disables browser HTML5 validation so the form will submit for mock testing -->
+    <form id="paymentForm" method="POST" action="{{ url_for('register_flow.payment') }}" novalidate class="payment-form">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Payment Method</label>
+          <select name="payment_method" id="payment_method" class="form-control" required>
+            <option value="Credit Card">Credit Card</option>
+            <option value="PayPal">PayPal (simulated)</option>
+            <option value="Crypto">Crypto (simulated)</option>
+          </select>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Cardholder Name</label>
+          <input type="text" name="card_name" id="card_name" class="form-control" placeholder="Jane Doe">
+        </div>
+      </div>
+
+      <div id="cardFields">
+        <div class="row">
+          <div class="col-md-8 mb-3">
+            <label class="form-label">Card Number</label>
+            <input type="text" name="card_number" id="card_number" class="form-control" placeholder="4242 4242 4242 4242" autocomplete="off" inputmode="numeric" maxlength="23">
+          </div>
+          <div class="col-md-2 mb-3">
+            <label class="form-label">Expiry (MM/YY)</label>
+            <input type="text" name="expiry" id="expiry" class="form-control" placeholder="12/29" maxlength="5" inputmode="numeric">
+          </div>
+          <div class="col-md-2 mb-3">
+            <label class="form-label">CVV</label>
+            <input type="text" name="cvv" id="cvv" class="form-control" placeholder="123" maxlength="4" inputmode="numeric">
+          </div>
+        </div>
+      </div>
+
+      <div class="mock-note">
+        <strong>Mock test info:</strong>
+        Use the test card <code>4242 4242 4242 4242</code>, expiry <code>12/29</code>, CVV <code>123</code>.
+        This is a mock payment flow — no real charges.
+      </div>
+
+      <div class="text-center mt-4">
+        <button type="submit" class="btn btn-primary">Complete Payment (Mock)</button>
+        <a href="{{ url_for('register_flow.plan') }}" class="btn btn-secondary">Back to Plans</a>
+      </div>
+    </form>
+  </div>
+</section>
+
+<style>
+.payment-section { padding: 64px 0; color: var(--text); }
+.container { max-width: 920px; margin: 0 auto; background: linear-gradient(180deg,var(--panel),var(--panel-2)); border:1px solid var(--line); border-radius:16px; padding:30px; box-shadow:var(--shadow); }
+.title { color:var(--accent); font-size:1.6rem; font-weight:800; margin-bottom:6px; }
+.subtitle { color:var(--muted); margin-bottom:18px; }
+.plan-card { border:1px solid var(--line); padding:14px; border-radius:10px; background:rgba(99,226,255,0.02); margin-bottom:18px; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.plan-name { font-weight:800; color:var(--text); }
+.plan-price { font-size:1.3rem; color:var(--accent); font-weight:900; }
+.plan-features ul { margin:8px 0 0 18px; color:var(--muted); padding:0; }
+.form-label { font-weight:600; color:var(--muted); margin-bottom:6px; display:block; }
+.form-control { width:100%; padding:10px 12px; border-radius:8px; border:1px solid var(--line); background:#0f141b; color:var(--text); }
+.mock-note { margin-top:12px; color:var(--muted); font-size:13px; }
+.btn { padding:10px 16px; border-radius:10px; font-weight:700; border:none; cursor:pointer; }
+.btn-primary { background:var(--accent); color:#001018; }
+.btn-secondary { background:transparent; color:var(--muted); border:1px solid var(--line); margin-left:8px; }
+</style>
+
+<script>
+/*
+  Simple input formatting & masking for a mock payment form:
+  - Formats card number into groups while typing
+  - Masks card number on blur (shows only last 4 digits)
+  - Keeps full value in the input so server receives it (important for mock)
+*/
+(function(){
+  const cardInput = document.getElementById('card_number');
+  const expiry   = document.getElementById('expiry');
+
+  function formatCard(value){
+    return value.replace(/\D/g,'').slice(0,16).replace(/(.{4})/g,'$1 ').trim();
+  }
+
+  cardInput && cardInput.addEventListener('input', (e)=>{
+    const pos = e.target.selectionStart;
+    const formatted = formatCard(e.target.value);
+    e.target.value = formatted;
+  });
+
+  cardInput && cardInput.addEventListener('blur', (e)=>{
+    // mask leaving last 4 digits visible
+    const raw = e.target.value.replace(/\D/g,'');
+    if(!raw) return;
+    const last4 = raw.slice(-4);
+    const masked = last4.padStart(raw.length, '•');
+    // show grouped masked (4s)
+    e.target.value = masked.replace(/(.{4})/g,'$1 ').trim();
+  });
+
+  cardInput && cardInput.addEventListener('focus', (e)=>{
+    // reveal actual digits on focus for editing
+    // In this mock form we can't reconstruct the original digits after masking, so we don't replace.
+    // For testing we assume user enters again when focused.
+    // (If you want to preserve the true value, you'd keep it in a data attribute.)
+    const raw = e.target.value.replace(/[^0-9]/g,'');
+    e.target.value = formatCard(raw);
+    // put caret at end
+    setTimeout(()=> e.target.selectionStart = e.target.selectionEnd = e.target.value.length, 0);
+  });
+
+  // simple expiry formatting MM/YY
+  expiry && expiry.addEventListener('input', (e)=>{
+    let v = e.target.value.replace(/\D/g,'').slice(0,4);
+    if(v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2);
+    e.target.value = v;
+  });
+
+  // Optional: on submit we allow everything (novalidate), but we can still rudimentarily ensure a method is selected
+  document.getElementById('paymentForm').addEventListener('submit', function(e){
+    // Because this is a mock flow, we won't block submission.
+    // But you can add quick checks here if you want:
+    // e.g. require payment_method
+    const pm = document.getElementById('payment_method').value;
+    if(!pm){
+      e.preventDefault();
+      alert('Please choose a payment method.');
+    }
+  });
+})();
+</script>
+
+{% endblock %}

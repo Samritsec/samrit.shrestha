@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="bg-grid"></div>
+<div class="bg-grid-mask"></div>
+
+<section class="admin-setup-section">
+  <div class="container">
+    <h1 class="title text-center mb-3">Create Admin Account</h1>
+    <p class="subtitle text-center mb-4">
+      Set up your organization’s admin credentials and security alert preferences.
+    </p>
+
+    <form method="POST" action="{{ url_for('register_flow.admin_submit') }}" id="adminForm" class="admin-form">
+      <div class="card-grid">
+        <!-- Left: Admin Account -->
+        <div class="card-block">
+          <h3>👤 Admin Details</h3>
+
+          <div class="field">
+            <label>Username <span class="req">*</span></label>
+            <input type="text" name="username" class="input" placeholder="Your name" required>
+          </div>
+
+          <div class="field">
+            <label>Email <span class="req">*</span></label>
+            <input type="email" name="email" class="input" placeholder="admin@company.com" required>
+          </div>
+
+          <div class="field">
+            <label>Password <span class="req">*</span></label>
+            <input type="password" name="password" id="password" class="input" placeholder="••••••••" required>
+          </div>
+
+          <div class="field">
+            <label>Confirm Password <span class="req">*</span></label>
+            <input type="password" name="confirm_password" id="confirm_password" class="input" placeholder="••••••••" required>
+            <div id="passMsg" class="helper"></div>
+          </div>
+        </div>
+
+        <!-- Right: Alert Configuration -->
+        <div class="card-block">
+          <h3>🔔 Alert Preferences</h3>
+
+          <div class="field">
+            <label>Alert Email</label>
+            <input type="email" name="alert_email" class="input" placeholder="alerts@company.com (optional)">
+          </div>
+
+          <div class="field">
+            <label>Alert Phone (for SOS call)</label>
+            <input type="tel" name="alert_phone" id="alert_phone" class="input" placeholder="+1 (555) 000-0000">
+          </div>
+
+          <div class="field">
+            <label>Enable Alerts For</label>
+            <div class="checkbox-list">
+              {% for alert in alert_types %}
+              <label>
+                <input type="checkbox" name="enabled_types" value="{{ alert }}" 
+                       {% if alert in defaults.enabled_types %}checked{% endif %}>
+                {{ alert.replace('_',' ')|title }}
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="field toggle">
+            <label>
+              <input type="checkbox" name="voice_call_on_critical" 
+                     {% if defaults.voice_call_on_critical %}checked{% endif %}>
+              Receive SOS voice call on critical threat
+            </label>
+          </div>
+
+          <div class="summary">
+            <strong>Plan:</strong> {{ plan_name }}  
+            {% if plan_name == "Enterprise" %}
+              <span class="badge premium">Full coverage</span>
+            {% elif plan_name == "Professional" %}
+              <span class="badge pro">Advanced</span>
+            {% else %}
+              <span class="badge basic">Basic</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-4">
+        <button type="submit" class="btn btn-primary">Finalize Setup →</button>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-ghost">Cancel</a>
+      </div>
+
+      <div id="formMsg" class="form-msg"></div>
+    </form>
+  </div>
+</section>
+
+<style>
+.admin-setup-section { padding:60px 0; color:var(--text); }
+.container {
+  max-width:1050px; margin:0 auto; background:linear-gradient(180deg,var(--panel),var(--panel-2));
+  border:1px solid var(--line); border-radius:20px; padding:34px 30px; box-shadow:var(--shadow);
+}
+.title { color:var(--accent); font-weight:800; text-shadow:0 0 10px rgba(99,226,255,.3); }
+.subtitle { color:var(--muted); margin-bottom:20px; }
+.card-grid { display:flex; gap:24px; flex-wrap:wrap; }
+.card-block {
+  flex:1; min-width:380px; background:rgba(255,255,255,.02); border:1px solid var(--line);
+  border-radius:14px; padding:20px;
+}
+.field { margin-bottom:14px; display:flex; flex-direction:column; }
+.field label { font-weight:600; color:var(--muted); margin-bottom:6px; }
+.req { color:#ff8c8c; }
+.input {
+  background:#0f141b; border:1px solid var(--line); border-radius:10px;
+  padding:10px 12px; color:var(--text);
+}
+.input:focus { border-color:var(--accent); outline:none; box-shadow:0 0 6px rgba(99,226,255,.25); }
+.checkbox-list { display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+.checkbox-list label { cursor:pointer; color:var(--text); font-size:14px; }
+.checkbox-list input { margin-right:8px; }
+.toggle label { color:var(--text); cursor:pointer; }
+.summary { margin-top:10px; font-size:14px; color:var(--muted); }
+.badge { padding:3px 8px; border-radius:8px; font-size:12px; margin-left:6px; }
+.badge.basic { background:rgba(99,226,255,.1); color:var(--accent); }
+.badge.pro { background:rgba(255,200,120,.1); color:#ffc878; }
+.badge.premium { background:rgba(255,100,100,.1); color:#ff6464; }
+.btn { border:none; padding:12px 18px; border-radius:12px; cursor:pointer; font-weight:700; transition:.2s; }
+.btn-primary { background:var(--accent); color:#001018; }
+.btn-primary:hover { background:var(--accent-2); box-shadow:0 0 10px rgba(99,226,255,.4); }
+.btn-ghost { border:1px solid var(--line); background:transparent; color:var(--text); }
+.helper { font-size:12px; color:var(--muted); margin-top:4px; }
+.form-msg { margin-top:10px; color:var(--muted); font-size:13px; }
+@media(max-width:800px){ .card-grid{flex-direction:column;} }
+</style>
+
+<script>
+const pass = document.getElementById('password');
+const confirm = document.getElementById('confirm_password');
+const msg = document.getElementById('passMsg');
+const phone = document.getElementById('alert_phone');
+const form = document.getElementById('adminForm');
+const formMsg = document.getElementById('formMsg');
+
+/* ✅ Confirm password check */
+function checkPasswords() {
+  if (!pass.value || !confirm.value) {
+    msg.textContent = '';
+    return;
+  }
+  if (pass.value === confirm.value) {
+    msg.style.color = '#63e2ff';
+    msg.textContent = 'Passwords match ✅';
+  } else {
+    msg.style.color = '#ff7070';
+    msg.textContent = 'Passwords do not match ❌';
+  }
+}
+pass.addEventListener('input', checkPasswords);
+confirm.addEventListener('input', checkPasswords);
+
+/* ☎️ Phone masking */
+phone.addEventListener('input', (e) => {
+  let value = e.target.value.replace(/\D/g, '');
+  if (value.startsWith('1')) value = '+' + value;
+  else if (!value.startsWith('+')) value = '+1' + value;
+  if (value.length > 2)
+    value = value.slice(0,2) + ' (' + value.slice(2,5) + ') ' + value.slice(5,8) + '-' + value.slice(8,12);
+  e.target.value = value.slice(0,18);
+});
+
+/* 🧠 Prevent form submit if passwords mismatch */
+form.addEventListener('submit', (e) => {
+  if (pass.value !== confirm.value) {
+    e.preventDefault();
+    formMsg.textContent = 'Please fix password mismatch before continuing.';
+    formMsg.style.color = '#ff7070';
+  }
+});
+</script>
+
+{% endblock %}

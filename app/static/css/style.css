@@ -1,0 +1,174 @@
+/* ========================================
+   ⚡ TenshiGuard Login / Auth Styles
+   ======================================== */
+
+:root {
+  --bg: #0b0f14;
+  --bg-2: #0f141b;
+  --panel: #121824;
+  --panel-2: #0f1622;
+  --text: #e7eef7;
+  --muted: #9ab0c6;
+  --accent: #63e2ff;
+  --accent-2: #4cc9f0;
+  --line: #1c2636;
+  --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+}
+
+/* Reset */
+* {
+  box-sizing: border-box;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Background grid */
+.bg-grid,
+.bg-grid-mask {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;  /* ✅ allow typing & clicking */
+  z-index: 0;
+}
+
+.bg-grid {
+  background:
+    linear-gradient(transparent 0 1px, #0c1726 1px 100%) top left / 24px 24px repeat,
+    linear-gradient(90deg, transparent 0 1px, #0c1726 1px 100%) top left / 24px 24px repeat;
+  animation: gridMove 18s linear infinite;
+  opacity: .25;
+}
+.bg-grid-mask {
+  background: radial-gradient(80vmax 60vmax at 10% 10%, rgba(76, 201, 240, .12), transparent 60%),
+              radial-gradient(80vmax 60vmax at 90% 90%, rgba(99, 226, 255, .10), transparent 60%);
+}
+@keyframes gridMove {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(24px); }
+}
+
+/* =============================
+   Login / Auth Layout
+   ============================= */
+.auth-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: var(--bg);
+  position: relative;
+  z-index: 1;
+}
+
+.auth-container {
+  position: relative;
+  z-index: 2;
+  max-width: 400px;
+  width: 100%;
+  padding: 24px;
+}
+
+.auth-card {
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: 40px 32px;
+  text-align: center;
+}
+
+.auth-logo {
+  width: 90px;
+  height: auto;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 0 10px rgba(99, 226, 255, .25));
+}
+
+h2 {
+  margin: 10px 0;
+  font-size: 22px;
+  color: var(--accent);
+}
+.muted {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 30px;
+}
+
+.form-group {
+  text-align: left;
+  margin-bottom: 20px;
+}
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.form-control {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--bg-2);
+  color: var(--text);
+  border: 1px solid var(--line);
+  outline: none;
+  transition: border .2s, box-shadow .2s;
+}
+.form-control:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(99, 226, 255, .3);
+}
+
+.btn {
+  border: none;
+  padding: 12px 0;
+  width: 100%;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .3s ease;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #001018;
+}
+.btn-primary:hover {
+  background: var(--accent-2);
+  box-shadow: 0 0 15px rgba(99, 226, 255, .3);
+}
+
+.btn-outline-light {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+}
+.btn-outline-light:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.divider {
+  margin: 20px 0;
+  position: relative;
+  text-align: center;
+  color: var(--muted);
+}
+.divider::before,
+.divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background: var(--line);
+}
+.divider::before { left: 0; }
+.divider::after { right: 0; }

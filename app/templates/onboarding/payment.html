@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="register-shell">
+  <div class="container-narrow">
+    <div class="wizard-head">
+      <div class="wizard-steps">
+        <div class="w-step done">1. Plan</div>
+        <div class="w-step active">2. Payment</div>
+        <div class="w-step">3. Organization</div>
+      </div>
+      <h2>Payment</h2>
+      <p class="muted">Authorizing subscription for <b>{{ sub.name }}</b> — ${{ "%.2f"|format(sub.price) }}/mo</p>
+    </div>
+
+    <form method="POST" class="pay-grid">
+      <label class="pay-card">
+        <input type="radio" name="method" value="card" checked>
+        <div class="pay-inner">
+          <div class="pay-title">Credit / Debit</div>
+          <div class="muted">Visa, MasterCard, AMEX</div>
+        </div>
+      </label>
+
+      <label class="pay-card">
+        <input type="radio" name="method" value="paypal">
+        <div class="pay-inner">
+          <div class="pay-title">PayPal</div>
+          <div class="muted">Pay with your PayPal account</div>
+        </div>
+      </label>
+
+      <label class="pay-card">
+        <input type="radio" name="method" value="crypto">
+        <div class="pay-inner">
+          <div class="pay-title">Crypto</div>
+          <div class="muted">BTC / USDT (test mode)</div>
+        </div>
+      </label>
+
+      <div class="actions">
+        <a class="btn ghost" href="{{ url_for('onboarding.plan') }}">Back</a>
+        <button class="btn primary" type="submit">Authorize & Continue</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

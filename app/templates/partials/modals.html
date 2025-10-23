@@ -1,0 +1,73 @@
+<!-- Heavy Load Modal -->
+<div class="modal-mask" id="heavyModal" aria-hidden="true">
+  <div class="modal">
+    <div class="modal-head"><h3>Heavy Load Devices</h3><button class="icon-btn" id="heavyClose">✕</button></div>
+    <div class="modal-body">
+      <div class="table-wrap"><table class="tg-table"><thead><tr><th>Host</th><th>OS</th><th>IP</th><th>Status</th><th>CPU</th><th>Mem</th><th>Last Seen</th></tr></thead><tbody id="heavyTableBody"></tbody></table></div>
+      <div id="heavyCount" class="muted mt-2"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal-mask" id="addUserModal" aria-hidden="true">
+  <div class="modal">
+    <div class="modal-head"><h3>Add User</h3><button class="icon-btn" id="addUserClose">✕</button></div>
+    <div class="modal-body">
+      <form id="addUserForm" class="user-form">
+        <label>Username</label><input id="addUsername" required>
+        <label>Email</label><input id="addEmail" type="email" required>
+        <label>Password</label><input id="addPassword" type="password" required>
+        <label>Role</label><select id="addRole"><option value="user">User</option><option value="admin">Admin</option></select>
+        <button class="btn">Add</button>
+        <div id="addUserStatus" class="muted"></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Add Device Modal -->
+<div class="modal-mask" id="addDeviceModal" aria-hidden="true">
+  <div class="modal">
+    <div class="modal-head"><h3>Add Device</h3><button class="icon-btn" id="addDeviceClose">✕</button></div>
+    <div class="modal-body">
+      <form id="addDeviceForm" class="user-form">
+        <label>Hostname</label><input id="deviceHost" required>
+        <label>Operating System</label><input id="deviceOS" required>
+        <label>IP Address</label><input id="deviceIP" required>
+        <button class="btn">Add</button>
+        <div id="addDeviceStatus" class="muted"></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Add Agent Modal -->
+<div class="modal-mask" id="addAgentModal" aria-hidden="true">
+  <div class="modal">
+    <div class="modal-head"><h3>Add Agent</h3><button class="icon-btn" id="addAgentClose">✕</button></div>
+    <div class="modal-body">
+      <form id="addAgentForm" class="user-form">
+        <label>Agent Name</label><input id="agentName" required>
+        <label>Type</label><select id="agentType"><option>Windows</option><option>Linux</option><option>macOS</option></select>
+        <button class="btn">Add</button>
+        <div id="addAgentStatus" class="muted"></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Report Modal -->
+<div class="modal-mask" id="reportModal" aria-hidden="true">
+  <div class="modal">
+    <div class="modal-head"><h3>Generate Report</h3><button class="icon-btn" id="reportClose">✕</button></div>
+    <div class="modal-body">
+      <form id="reportForm" class="user-form">
+        <label>Report Type</label>
+        <select id="reportType"><option value="summary">Summary (CSV)</option><option value="detailed">Detailed (PDF)</option></select>
+        <button class="btn">Generate</button>
+        <div id="reportStatus" class="muted"></div>
+      </form>
+    </div>
+  </div>
+</div>
