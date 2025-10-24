@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}TenshiGuard Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-container d-flex">
+
+<!-- 🌐 Sidebar -->
+<nav class="sidebar bg-dark text-white p-3">
+  <div class="sidebar-header mb-4 text-center">
+    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" height="40" class="mb-2">
+    <h5 class="fw-bold">TenshiGuard</h5>
+    <p class="text-muted small">Endpoint Security Console</p>
+  </div>
+
+  <ul class="nav flex-column">
+    <li class="nav-item mb-2">
+      <a class="nav-link text-white" href="{{ url_for('dashboard.index') }}">
+        <i class="fa-solid fa-gauge me-2"></i> Overview
+      </a>
+    </li>
+    <li class="nav-item mb-2">
+      <a class="nav-link text-white" href="{{ url_for('dashboard.index') }}">
+        <i class="fa-solid fa-user-shield me-2"></i> Dashboard
+      </a>
+    </li>
+    <li class="nav-item mb-2">
+      <a class="nav-link text-white" href="{{ url_for('auth.logout') }}">
+        <i class="fa-solid fa-right-from-bracket me-2 text-danger"></i> Logout
+      </a>
+    </li>
+  </ul>
+</nav>
+
+
+  <!-- 📊 Main Content -->
+  <main class="flex-grow-1 bg-dark text-white p-4" style="min-height: 100vh;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4><i class="fa-solid fa-chart-line me-2 text-info"></i>Dashboard Overview</h4>
+      <div>
+        <span class="me-3"><i class="fa-solid fa-user"></i> {{ current_user.username }}</span>
+        <span class="badge bg-primary text-uppercase">{{ current_user.organization.sector if current_user.organization else 'N/A' }}</span>
+      </div>
+    </div>
+
+    <!-- 🔹 Common Overview Cards -->
+    <div class="row mb-4 text-center">
+      <div class="col-md-3 mb-3">
+        <div class="card bg-secondary text-white shadow-sm">
+          <div class="card-body">
+            <h6>Total Devices</h6>
+            <h3 class="fw-bold">{{ total_devices or 0 }}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 mb-3">
+        <div class="card bg-secondary text-white shadow-sm">
+          <div class="card-body">
+            <h6>Online Devices</h6>
+            <h3 class="fw-bold text-success">{{ online_devices or 0 }}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 mb-3">
+        <div class="card bg-secondary text-white shadow-sm">
+          <div class="card-body">
+            <h6>Unusual Activity</h6>
+            <h3 class="fw-bold text-warning">{{ unusual_activity or 0 }}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 mb-3">
+        <div class="card bg-secondary text-white shadow-sm">
+          <div class="card-body">
+            <h6>Compliance Score</h6>
+            <h3 class="fw-bold text-info">{{ compliance_score or '89%' }}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📈 Threat Summary -->
+    <section class="mb-5">
+      <h5 class="text-info mb-3"><i class="fa-solid fa-shield-halved me-2"></i>Recent Security Events</h5>
+      <div class="card bg-secondary p-3">
+        <ul class="list-unstyled mb-0">
+          {% for event in recent_events %}
+          <li class="mb-2">
+            <span class="badge bg-{{ event.level }}">{{ event.level|capitalize }}</span>
+            {{ event.description }} — <small class="text-muted">{{ event.time }}</small>
+          </li>
+          {% else %}
+          <li class="text-muted">No recent events found.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </section>
+
+    <!-- 🧩 Sector-Specific Section -->
+    <section id="sector-content" class="mt-5">
+      {% block sector_content %}
+      <div class="text-center text-muted">
+        <p><i class="fa-solid fa-layer-group"></i> Sector-specific widgets will load here...</p>
+      </div>
+      {% endblock %}
+    </section>
+  </main>
+</div>
+{% endblock %}
