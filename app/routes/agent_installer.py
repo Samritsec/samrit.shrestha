@@ -125,6 +125,19 @@ def _build_windows_ps(org: Organization, base: str) -> str:
         Write-Host "== TenshiGuard Windows Agent =="
 
         $root = "C:\\TenshiGuard"
+        $taskName = "TenshiGuardAgent"
+
+        # 1. Stop existing agent to release file locks
+        Write-Host "🛑 Stopping existing agent..."
+        Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue
+        Stop-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
+        
+        # Kill any python processes running from this folder (aggressive cleanup)
+        Get-WmiObject Win32_Process | Where-Object { $_.CommandLine -like "*$root*" } | ForEach-Object { 
+            Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue 
+        }
+        Start-Sleep -Seconds 2
+
         if (-not (Test-Path $root)) {{
             New-Item -ItemType Directory -Path $root | Out-Null
         }}
@@ -176,7 +189,13 @@ def _build_windows_ps(org: Organization, base: str) -> str:
         # Check if venv exists AND has python.exe. If not, remove and recreate.
         if ((Test-Path "$root\\venv") -and (-not (Test-Path "$root\\venv\\Scripts\\python.exe"))) {{
             Write-Host "   Found broken venv, removing..."
-            Remove-Item -Path "$root\\venv" -Recurse -Force
+            try {{
+                Remove-Item -Path "$root\\venv" -Recurse -Force -ErrorAction Stop
+            }} catch {{
+                Write-Host "❌ Failed to remove broken venv. Files are locked."
+                Write-Host "   Please manually delete C:\\TenshiGuard and try again."
+                exit 1
+            }}
         }}
 
         if (-not (Test-Path "$root\\venv")) {{
@@ -198,7 +217,6 @@ def _build_windows_ps(org: Organization, base: str) -> str:
         Invoke-WebRequest -Uri $client -OutFile "$root\\agent_client.py"
 
         Write-Host "Registering scheduled task (SYSTEM)..."
-        $taskName = "TenshiGuardAgent"
         $action   = New-ScheduledTaskAction -Execute "$root\\venv\\Scripts\\python.exe" -Argument "$root\\agent_client.py"
         $trigger  = New-ScheduledTaskTrigger -AtStartup
         $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
@@ -206,7 +224,6 @@ def _build_windows_ps(org: Organization, base: str) -> str:
         # Create settings to allow running on battery and immediately
         $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -DontStopOnIdleEnd -ExecutionTimeLimit (New-TimeSpan -Days 0)
 
-        Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue
         
         try {{
             Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Force | Out-Null
