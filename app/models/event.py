@@ -45,6 +45,11 @@ class Event(db.Model):
 
     # *** END BLOCK ***
 
+    # ---- AI Feedback ----
+    feedback = db.Column(db.String(20), nullable=True)  # 'true_positive', 'false_positive'
+    feedback_at = db.Column(db.DateTime(timezone=True), nullable=True)
+    adjusted_score = db.Column(db.Float, nullable=True)
+
     # ---- Timestamp ----
     ts = db.Column(
         db.DateTime(timezone=True),

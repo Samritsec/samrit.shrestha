@@ -12,30 +12,38 @@ class LearningEngine:
 
     def submit_feedback(self, alert_id, feedback_type):
         """
-        Process user feedback for a specific alert.
+        Process user feedback for a specific alert (Event).
         feedback_type: 'true_positive' | 'false_positive'
         """
         from app.models.ai_learned_rule import AILearnedRule
+        from app.models.event import Event
 
-        alert = Alert.query.get(alert_id)
-        if not alert:
-            return False, "Alert not found"
+        # Query Event instead of Alert
+        event = Event.query.get(alert_id)
+        if not event:
+            return False, "DEBUG: Event not found (ID mismatch?)"
 
-        alert.feedback = feedback_type
-        alert.feedback_at = datetime.now(timezone.utc)
+        event.feedback = feedback_type
+        event.feedback_at = datetime.now(timezone.utc)
         
         # Adjust score based on feedback
         if feedback_type == 'false_positive':
-            alert.adjusted_score = 0.1  # Deprioritize
+            event.adjusted_score = 0.1  # Deprioritize
         else:
-            alert.adjusted_score = 1.0  # Reinforce
+            event.adjusted_score = 1.0  # Reinforce
 
         # ------------------------------------------------
         # 🧠 Continuous Learning: Update Rule Weights
         # ------------------------------------------------
-        if alert.title and "[AI]" in alert.title:
-            rule_name = alert.title.replace("[AI]", "").strip()
-            
+        # Extract rule name from message if possible, or use category
+        # Message format: "RuleName — Severity" or similar
+        rule_name = "unknown"
+        if event.message and "—" in event.message:
+            rule_name = event.message.split("—")[0].strip()
+        elif event.category:
+            rule_name = event.category
+
+        if rule_name:
             learned_rule = AILearnedRule.query.filter_by(rule_name=rule_name).first()
             if not learned_rule:
                 learned_rule = AILearnedRule(rule_name=rule_name, weight_modifier=0.0, feedback_count=0)
@@ -59,7 +67,9 @@ class LearningEngine:
         """
         Calculate model accuracy based on user feedback.
         """
-        total_feedback = Alert.query.filter_by(organization_id=org_id).filter(Alert.feedback != 'pending').count()
+        from app.models.event import Event
+        
+        total_feedback = Event.query.filter_by(organization_id=org_id).filter(Event.feedback != None).count()
         if total_feedback == 0:
             return {
                 "accuracy": 0,
@@ -68,8 +78,8 @@ class LearningEngine:
                 "total_learned": 0
             }
 
-        true_positives = Alert.query.filter_by(organization_id=org_id, feedback='true_positive').count()
-        false_positives = Alert.query.filter_by(organization_id=org_id, feedback='false_positive').count()
+        true_positives = Event.query.filter_by(organization_id=org_id, feedback='true_positive').count()
+        false_positives = Event.query.filter_by(organization_id=org_id, feedback='false_positive').count()
         
         accuracy = int((true_positives / total_feedback) * 100)
 
