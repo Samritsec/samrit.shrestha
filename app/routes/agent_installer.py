@@ -133,9 +133,9 @@ def _build_windows_ps(org: Organization, base: str) -> str:
         Stop-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
         
         # Kill any python processes running from this folder (aggressive cleanup)
-        Get-WmiObject Win32_Process | Where-Object { $_.CommandLine -like "*$root*" } | ForEach-Object { 
+        Get-WmiObject Win32_Process | Where-Object {{ $_.CommandLine -like "*$root*" }} | ForEach-Object {{ 
             Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue 
-        }
+        }}
         Start-Sleep -Seconds 2
 
         if (-not (Test-Path $root)) {{
