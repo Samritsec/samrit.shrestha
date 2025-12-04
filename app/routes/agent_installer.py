@@ -544,6 +544,86 @@ def serve_agent_client(org_token: str):
                     import ctypes
                     return ctypes.windll.shell32.IsUserAnAdmin() != 0
                 else:
+                    return os.geteuid() == 0
+            except:
+                return False
+
+        def tail_windows_events():
+            '''Stream Windows Event Log via PowerShell (Robust RecordId Tailing)'''
+            if not is_admin():
+                log("Running as non-admin: Windows Security Log monitoring disabled.")
+                return
+
+            log("Watching Windows Security Event Log (RecordId Tailing)...")
+            
+            # 1. Get initial baseline (latest event RecordId)
+            # Get-WinEvent -LogName Security -FilterXPath "*[System[(EventID=4624 or EventID=4625 or EventID=4647)]]" -MaxEvents 1 -ErrorAction SilentlyContinue | Select-Object RecordId | ConvertTo-Json
+            startup_b64 = "RwBlAHQALQBXAGkAbgBFAHYAZQBuAHQAIAAtAEwAbwBnAE4AYQBtAGUAIABTAGUAYwB1AHIAaQB0AHkAIAAtAEYAaQBsAHQAZQByAFgAUABhAHQAaAAgACIAKgBbAFMAeQBzAHQAZQBtAFsAKABFAHYAZQBuAHQASQBEAD0ANAA2ADIANAAgAG8AcgAgAEUAdgBlAG4AdABJAEQAPQA0ADYAMgA1ACAAbwByACAARQB2AGUAbgB0AEkARAA9ADQANgA0ADcAKQBdAF0AIgAgAC0ATQBhAHgARQB2AGUAbgB0AHMAIAAxACAALQBFAHIAcgBvAHIAQQBjAHQAaQBvAG4AIABTAGkAbABlAG4AdABsAHkAQwBvAG4AdgBlAHIAdABUAG8ALQBKAHMAbwBuAA=="
+            
+            last_record_id = 0
+            try:
+                out = subprocess.check_output(["powershell", "-EncodedCommand", startup_b64], text=True).strip()
+                if out:
+                    import json
+                    try:
+                        data = json.loads(out)
+                        if isinstance(data, dict):
+                            last_record_id = int(data.get("RecordId", 0))
+                        elif isinstance(data, list) and len(data) > 0:
+                            last_record_id = int(data[0].get("RecordId", 0))
+                    except:
+                        pass
+            except:
+                pass
+                
+            log(f"Starting event tail from RecordId > {last_record_id}")
+
+            # 2. Polling Loop
+            # Get-WinEvent -LogName Security -FilterXPath "*[System[(EventID=4624 or EventID=4625 or EventID=4647)]]" -MaxEvents 10 -ErrorAction SilentlyContinue | Select-Object RecordId, Id, Message, TimeCreated | ConvertTo-Json
+            poll_b64 = "RwBlAHQALQBXAGkAbgBFAHYAZQBuAHQAIAAtAEwAbwBnAE4AYQBtAGUAIABTAGUAYwB1AHIAaQB0AHkAIAAtAEYAaQBsAHQAZQByAFgAUABhAHQAaAAgACIAKgBbAFMAeQBzAHQAZQBtAFsAKABFAHYAZQBuAHQASQBEAD0ANAA2ADIANAAgAG8AcgAgAEUAdgBlAG4AdABJAEQAPQA0ADYAMgA1ACAAbwByACAARQB2AGUAbgB0AEkARAA9ADQANgA0ADcAKQBdAF0AIgAgAC0ATQBhAHgARQB2AGUAbgB0AHMAIAAxADAAIAAtAEUAcgByAG8AcgBBAGMAdABpAG8AbgAgAFMAaQBsAGUAbgB0AGwAeQBDAG8AbgB0AGkAbgB1AGUAIAB8ACAAUwBlAGwAZQBjAHQALQBPAGIAagBlAGMAdAAgAFIAZQBjAG8AcgBkAEkAZAAsACAASQBkACwAIABNAGUAcwBzAGEAZwBlACwAIABUAGkAbQBlAEMAcgBlAGEAdABlAGQAIAB8ACAAQwBvAG4AdgBlAHIAdABUAG8ALQBKAHMAbwBuAA=="
+            cmd = ["powershell", "-EncodedCommand", poll_b64]
+
+            while True:
+                try:
+                    out = subprocess.check_output(cmd, text=True).strip()
+                    if out:
+                        import json
+                        try:
+                            data = json.loads(out)
+                            if isinstance(data, dict): data = [data]
+                            
+                            # Sort by RecordId ascending to process in order
+                            data.sort(key=lambda x: x.get("RecordId", 0))
+
+                            for event in data:
+                                rid = int(event.get("RecordId", 0))
+                                if rid <= last_record_id:
+                                    continue
+                                
+                                last_record_id = rid
+                                eid = event.get("Id")
+                                msg = event.get("Message", "")[:200]
+                                
+                                if eid == 4624:
+                                    if "Advapi" not in msg and "SYSTEM" not in msg: 
+                                        send_event("auth", "login", f"Windows Logon: {msg}", "info")
+                                elif eid == 4625:
+                                    send_event("auth", "failed_login", f"Windows Failed Logon: {msg}", "medium")
+                                elif eid == 4647:
+                                    send_event("auth", "logout", f"Windows Logoff: {msg}", "info")
+                                    
+                        except json.JSONDecodeError:
+                            pass
+                except subprocess.CalledProcessError:
+                    pass
+                    
+                time.sleep(2)
+
+        def start_auth_watcher():
+            sys_plat = platform.system().lower()
+            if "linux" in sys_plat or "darwin" in sys_plat: # macOS is similar to Linux (uses unified log, but tailing works for some things)
+                # For macOS specifically, 'log stream' is better, but let's stick to linux tail for now as fallback
+                # If macOS, we might need a specific handler.
                 if "darwin" in sys_plat:
                     # macOS 'log stream' TODO
                     pass 
