@@ -131,19 +131,42 @@ def _build_windows_ps(org: Organization, base: str) -> str:
 
         # Check for Python
         $py = (Get-Command python -ErrorAction SilentlyContinue)
-        if (-not $py) {{
-            Write-Host "Python not found. Attempting to install via winget..."
+        $validPython = $false
+
+        if ($py) {{
+            # Check if it is the Windows Store stub or actually works
             try {{
+                $res = python --version 2>&1
+                if ($LASTEXITCODE -eq 0) {{
+                    $validPython = $true
+                }}
+            }} catch {{}}
+        }}
+
+        if (-not $validPython) {{
+            Write-Host "Python not found (or is just a stub). Attempting to install via winget..."
+            try {{
+                # Install Python 3.11
                 winget install -e --id Python.Python.3.11 --scope machine --accept-package-agreements --accept-source-agreements
+                
+                # Refresh Path
                 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+                
+                # Re-check
                 $py = (Get-Command python -ErrorAction SilentlyContinue)
+                if ($py) {{
+                    $res = python --version 2>&1
+                    if ($LASTEXITCODE -eq 0) {{
+                        $validPython = $true
+                    }}
+                }}
             }} catch {{
                 Write-Host "Winget failed. Please install Python 3 manually and re-run."
                 exit 1
             }}
         }}
 
-        if (-not $py) {{
+        if (-not $validPython) {{
              Write-Host "Python still not found. Please restart PowerShell or install Python manually."
              exit 1
         }}
