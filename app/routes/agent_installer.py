@@ -490,7 +490,8 @@ def serve_agent_client(org_token: str):
                 "severity": severity,
                 "ts": datetime.now(timezone.utc).isoformat(),
             }}
-            code, body = post("/api/agent/event", payload)
+            # UPDATED: Send to the AI ingest endpoint which handles generic events too
+            code, body = post("/api/agent/ai/event", payload)
             log(f"event({{category}}/{{action}}) -> {{code}}")
             return code
 
