@@ -602,6 +602,65 @@ def serve_agent_client(org_token: str):
 
             observer.start()
 
+        # -------------- Process Monitoring (Malicious/Suspicious) --------------
+        def monitor_processes():
+            """Scans running processes for known bad names or suspicious paths."""
+            BLACKLIST = ["mimikatz.exe", "nc.exe", "ncat.exe", "powershell_ise.exe", "psexec.exe"]
+            SUSPICIOUS_PATHS = [
+                "appdata\\\\\\\\local\\\\\\\\temp",
+                "appdata\\\\\\\\roaming\\\\\\\\temp",
+                "downloads"
+            ]
+            
+            log("Starting Process Monitor (Interval: 30s)...")
+            
+            seen_pids = set()
+
+            while True:
+                try:
+                    current_pids = set()
+                    if psutil:
+                        for proc in psutil.process_iter(['pid', 'name', 'exe', 'cmdline']):
+                            try:
+                                pid = proc.info['pid']
+                                name = (proc.info['name'] or "").lower()
+                                exe = (proc.info['exe'] or "").lower()
+                                cmdline = " ".join(proc.info['cmdline'] or [])
+                                
+                                current_pids.add(pid)
+                                
+                                # Skip if we've already alerted on this PID to avoid spam
+                                if pid in seen_pids:
+                                    continue
+
+                                # 1. Check Blacklist
+                                if name in BLACKLIST:
+                                    msg = f"Malicious process detected: {{name}} (PID: {{pid}})"
+                                    log(msg)
+                                    send_event("process", "detected", msg, "high")
+                                    seen_pids.add(pid)
+                                    continue
+
+                                # 2. Check Suspicious Paths
+                                for sus_path in SUSPICIOUS_PATHS:
+                                    if sus_path in exe:
+                                        msg = f"Suspicious process path: {{name}} running from {{exe}}"
+                                        log(msg)
+                                        send_event("process", "suspicious_path", msg, "high")
+                                        seen_pids.add(pid)
+                                        break
+
+                            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                                pass
+                    
+                    # Cleanup seen_pids for processes that have terminated
+                    seen_pids = seen_pids.intersection(current_pids)
+
+                except Exception as e:
+                    log(f"Process monitor error: {{e}}")
+                
+                time.sleep(30)
+
         # -------------- Auth Monitoring (Cross-Platform) --------------
         
         def tail_linux_auth():
@@ -731,7 +790,6 @@ def serve_agent_client(org_token: str):
             sys_plat = platform.system().lower()
             if "linux" in sys_plat or "darwin" in sys_plat: # macOS is similar to Linux (uses unified log, but tailing works for some things)
                 # For macOS specifically, 'log stream' is better, but let's stick to linux tail for now as fallback
-                # If macOS, we might need a specific handler.
                 if "darwin" in sys_plat:
                     # macOS 'log stream' TODO
                     pass 
@@ -752,6 +810,9 @@ def serve_agent_client(org_token: str):
             # Start Event Monitoring
             start_auth_watcher()
             start_file_watcher()
+            
+            # Start Process Monitoring
+            threading.Thread(target=monitor_processes, daemon=True).start()
 
             # Heartbeat Loop
             while True:
