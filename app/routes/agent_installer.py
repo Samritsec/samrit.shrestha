@@ -173,8 +173,21 @@ def _build_windows_ps(org: Organization, base: str) -> str:
 
         Write-Host "📦 Setting up virtual environment..."
         Set-Location $root
+        # Check if venv exists AND has python.exe. If not, remove and recreate.
+        if ((Test-Path "$root\\venv") -and (-not (Test-Path "$root\\venv\\Scripts\\python.exe"))) {{
+            Write-Host "   Found broken venv, removing..."
+            Remove-Item -Path "$root\\venv" -Recurse -Force
+        }}
+
         if (-not (Test-Path "$root\\venv")) {{
-            & $py.Source -m venv venv
+            try {{
+                & $py.Source -m venv venv
+                if ($LASTEXITCODE -ne 0) {{ throw "venv creation failed with exit code $LASTEXITCODE" }}
+            }} catch {{
+                Write-Host "❌ Failed to create virtual environment."
+                Write-Host "   Error: $_"
+                exit 1
+            }}
         }}
 
         Write-Host "⬇️  Installing dependencies..."
