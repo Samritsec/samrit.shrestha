@@ -582,12 +582,10 @@ def serve_agent_client(org_token: str):
                     # Constructing a precise query is hard without a persistent PS session.
                     # Let's try a simpler polling loop using subprocess.
                     
-                    # Optimized query using FilterXPath for performance
-                    # *[System[(EventID=4624 or EventID=4625 or EventID=4647) and TimeCreated[timediff(@SystemTime) <= 3000]]]
-                    cmd = [
-                        "powershell", "-Command",
-                        'Get-WinEvent -LogName Security -FilterXPath "*[System[(EventID=4624 or EventID=4625 or EventID=4647) and TimeCreated[timediff(@SystemTime) <= 3000]]]" -ErrorAction SilentlyContinue | Select-Object Id, Message, TimeCreated | ConvertTo-Json'
-                    ]
+                    # Base64 encoded command to avoid quoting hell
+                    # Get-WinEvent -LogName Security -FilterXPath "*[System[(EventID=4624 or EventID=4625 or EventID=4647) and TimeCreated[timediff(@SystemTime) <= 3000]]]" -ErrorAction SilentlyContinue | Select-Object Id, Message, TimeCreated | ConvertTo-Json
+                    ps_b64 = "RwBlAHQALQBXAGkAbgBFAHYAZQBuAHQAIAAtAEwAbwBnAE4AYQBtAGUAIABTAGUAYwB1AHIAaQB0AHkAIAAtAEYAaQBsAHQAZQByAFgAUABhAHQAaAAgACIAKgBbAFMAeQBzAHQAZQBtAFsAKABFAHYAZQBuAHQASQBEAD0ANAA2ADIANAAgAG8AcgAgAEUAdgBlAG4AdABJAEQAPQA0ADYAMgA1ACAAbwByACAARQB2AGUAbgB0AEkARAA9ADQANgA0ADcAKQAgAGEAbgBkACAAVABpAG0AZQBDAHIAZQBhAHQAZQBkAFsAdABpAG0AZQBkAGkAZgBmACgAQABTAHkAcwB0AGUAbQBUAGkAbQBlACkAIAA8AD0AIAAzADAAMAAwAF0AXQBdACIAIAAtAEUAcgByAG8AcgBBAGMAdABpAG8AbgAgAFMAaQBsAGUAbgB0AGwAeQBDAG8AbgB0AGkAbgB1AGUAIAB8ACAAUwBlAGwAZQBjAHQALQBPAGIAagBlAGMAdAAgAEkAZwAsACAATQBlAHMAcwBhAGcAZQAsACAAVABpAG0AZQBDAHIAZQBhAHQAZQBkACAAfAAgAEMAbwBuAHYAZQByAHQAVABvAC0ASgBzAG8AbgA="
+                    cmd = ["powershell", "-EncodedCommand", ps_b64]
                     
                     try:
                         out = subprocess.check_output(cmd, text=True).strip()
