@@ -604,7 +604,7 @@ def serve_agent_client(org_token: str):
 
         # -------------- Process Monitoring (Malicious/Suspicious) --------------
         def monitor_processes():
-            """Scans running processes for known bad names or suspicious paths."""
+            \"\"\"Scans running processes for known bad names or suspicious paths.\"\"\"
             BLACKLIST = ["mimikatz.exe", "nc.exe", "ncat.exe", "powershell_ise.exe", "psexec.exe"]
             SUSPICIOUS_PATHS = [
                 "appdata\\\\\\\\local\\\\\\\\temp",
