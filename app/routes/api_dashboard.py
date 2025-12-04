@@ -103,22 +103,38 @@ def failed_logins_trend():
     window_24h = now - timedelta(hours=24)
 
     # Query Events (not AISignal) for auth failures
-    rows = (
-        db.session.query(
-            func.strftime("%H:00", Event.ts).label("bucket"),
-            func.count(Event.id).label("count"),
-        )
+    # Fetch raw events and aggregate in Python to avoid SQLite strftime issues
+    events = (
+        db.session.query(Event.ts)
         .filter(
             Event.organization_id == org_id,
             Event.category == "auth",
             Event.ts >= window_24h,
         )
-        .group_by("bucket")
-        .order_by("bucket")
         .all()
     )
 
-    points = [{"bucket": r.bucket, "count": r.count} for r in rows]
+    # Bucket into 24 hourly slots (or whatever the frontend expects)
+    # The frontend expects "bucket" labels like "10:00", "11:00"
+    # We will create a map of buckets
+    
+    buckets = {}
+    # Initialize buckets for the last 24h? 
+    # The previous SQL query grouped by hour.
+    
+    for e in events:
+        ts = e.ts
+        if ts and ts.tzinfo is None:
+            ts = ts.replace(tzinfo=timezone.utc)
+        
+        # Format as HH:00
+        bucket_label = ts.strftime("%H:00")
+        buckets[bucket_label] = buckets.get(bucket_label, 0) + 1
+    
+    # Sort by bucket label (hour)
+    sorted_buckets = sorted(buckets.keys())
+    
+    points = [{"bucket": b, "count": buckets[b]} for b in sorted_buckets]
 
     # --------------------------------------------------------
     # 🧪 MOCK DATA INJECTION REMOVED
