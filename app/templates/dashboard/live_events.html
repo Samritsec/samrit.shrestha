@@ -45,6 +45,7 @@
           <tr>
             <th class="ps-4">Timestamp (UTC)</th>
             <th>Device</th>
+            <th>Device Risk</th>
             <th>Event Type</th>
             <th>Severity</th>
             <th>Description</th>
@@ -63,6 +64,16 @@
               </div>
               {% else %}
               <span class="text-muted fst-italic">Unknown Device</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if device %}
+              <span
+                class="badge bg-{{ 'critical' if device.risk_level == 'critical' else 'danger' if device.risk_level == 'high' else 'warning' if device.risk_level == 'medium' else 'success' }} text-uppercase">
+                {{ device.risk_score }} ({{ device.risk_level }})
+              </span>
+              {% else %}
+              <span class="text-muted small">-</span>
               {% endif %}
             </td>
             <td>
