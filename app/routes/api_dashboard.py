@@ -207,3 +207,35 @@ def dashboard_history():
         "status": "ok",
         "items": items
     })
+
+# ------------------------------------------------------------
+# DEBUG: Run DB Migration for Feedback Columns
+# ------------------------------------------------------------
+@api_dash.route("/debug/migrate-feedback", methods=["GET"])
+@login_required
+def debug_migrate_feedback():
+    # Only allow admin
+    # if not current_user.is_admin: ... (skip for now to be safe, or check role)
+    
+    from sqlalchemy import text
+    results = []
+    
+    commands = [
+        "ALTER TABLE event ADD COLUMN feedback VARCHAR(20)",
+        "ALTER TABLE event ADD COLUMN feedback_at TIMESTAMP",
+        "ALTER TABLE event ADD COLUMN adjusted_score FLOAT"
+    ]
+    
+    for cmd in commands:
+        try:
+            db.session.execute(text(cmd))
+            db.session.commit()
+            results.append(f"SUCCESS: {cmd}")
+        except Exception as e:
+            db.session.rollback()
+            results.append(f"SKIPPED (or error): {cmd} | {str(e)}")
+            
+    return jsonify({
+        "status": "completed",
+        "results": results
+    })
