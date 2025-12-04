@@ -169,7 +169,14 @@ def create_app():
     # --------------------------------------------------------
     @app.route("/healthz")
     def healthz():
-        return {"ok": True, "app": "TenshiGuard"}, 200
+        db_url = app.config.get("SQLALCHEMY_DATABASE_URI", "")
+        is_sqlite = "sqlite" in db_url
+        return {
+            "ok": True, 
+            "app": "TenshiGuard", 
+            "is_sqlite": is_sqlite, 
+            "db_url_prefix": db_url[:15] if db_url else "None"
+        }, 200
 
     # --------------------------------------------------------
     # ✓ Background Sweepers
