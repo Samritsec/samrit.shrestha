@@ -552,6 +552,7 @@ def serve_agent_client(org_token: str):
             '''Stream Windows Event Log via PowerShell (Robust RecordId Tailing)'''
             if not is_admin():
                 log("Running as non-admin: Windows Security Log monitoring disabled.")
+                send_event("agent", "error", "Running as non-admin. Security Log monitoring disabled.", "high")
                 return
 
             log("Watching Windows Security Event Log (RecordId Tailing)...")
