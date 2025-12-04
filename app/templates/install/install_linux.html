@@ -47,10 +47,30 @@
       </ul>
     </div>
 
+    <!-- Manual Requirements Section -->
+    <details class="mb-3">
+      <summary class="text-primary" style="cursor: pointer;">
+        <strong><i class="fa-solid fa-wrench me-1"></i> Missing Requirements?</strong> (Click for manual commands)
+      </summary>
+      <div class="mt-2 p-3 bg-light rounded border">
+        <p class="mb-1 text-muted small"><strong>Ubuntu / Debian / Kali:</strong></p>
+        <div class="code-box small-code mb-2" id="linDeb">sudo apt update && sudo apt install -y curl python3
+          python3-venv</div>
+        <button class="copy-btn secondary btn-sm mb-3" onclick="copyFrom('linDeb', this)">
+          <i class="fa-solid fa-copy"></i> Copy (Apt)
+        </button>
+
+        <p class="mb-1 text-muted small"><strong>CentOS / RHEL / Fedora:</strong></p>
+        <div class="code-box small-code mb-2" id="linRhel">sudo yum install -y curl python3</div>
+        <button class="copy-btn secondary btn-sm" onclick="copyFrom('linRhel', this)">
+          <i class="fa-solid fa-copy"></i> Copy (Yum)
+        </button>
+      </div>
+    </details>
+
     <p>
       1. Open your terminal (Shortcut: <strong>Ctrl + Alt + T</strong>).<br>
-      2. Ensure you have <code>curl</code> installed (<code>sudo apt install curl</code> or
-      <code>sudo yum install curl</code>).
+      2. Ensure you have <code>curl</code> installed (see above if missing).
     </p>
 
     <div class="code-label">Copy and paste this command:</div>
@@ -97,9 +117,10 @@
       <ul>
         <li><strong>"Permission denied"</strong>: Make sure you use <code>sudo bash</code> at the end of the command.
         </li>
-        <li><strong>"curl: command not found"</strong>: Install curl using your package manager.</li>
-        <li><strong>"venv module not found"</strong>: Install <code>python3-venv</code> (e.g.,
-          <code>sudo apt install python3-venv</code>).
+        <li><strong>"curl: command not found"</strong>: Install curl using your package manager (see Missing
+          Requirements above).</li>
+        <li><strong>"venv module not found"</strong>: Install <code>python3-venv</code> (see Missing Requirements
+          above).
         </li>
       </ul>
     </div>

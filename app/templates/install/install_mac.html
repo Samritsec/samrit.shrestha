@@ -47,6 +47,24 @@
       </ul>
     </div>
 
+    <!-- Manual Requirements Section -->
+    <details class="mb-3">
+      <summary class="text-primary" style="cursor: pointer;">
+        <strong><i class="fa-solid fa-wrench me-1"></i> Missing Requirements?</strong> (Click for manual commands)
+      </summary>
+      <div class="mt-2 p-3 bg-light rounded border">
+        <p class="mb-1 text-muted small">If Python 3 is missing, install it via Homebrew:</p>
+        <div class="code-box small-code mb-2" id="macPy">brew install python3</div>
+        <button class="copy-btn secondary btn-sm" onclick="copyFrom('macPy', this)">
+          <i class="fa-solid fa-copy"></i> Copy Command
+        </button>
+        <div class="text-muted small mt-2">
+          (Requires <a href="https://brew.sh" target="_blank">Homebrew</a>. If you don't have it, run:
+          <code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</code>)
+        </div>
+      </div>
+    </details>
+
     <p>
       1. Press <strong>Command (⌘) + Space</strong> to open Spotlight Search.<br>
       2. Type <strong>Terminal</strong> and press Enter.
