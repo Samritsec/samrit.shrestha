@@ -135,9 +135,9 @@
   <div class="step-body">
     <p>To completely remove the agent and stop monitoring:</p>
 
-    <div class="code-box" id="winUninstall">Unregister-ScheduledTask -TaskName "TenshiGuardAgent" -Confirm:$false
-      -ErrorAction SilentlyContinue; Remove-Item -Path "C:\TenshiGuard" -Recurse -Force -ErrorAction SilentlyContinue
-    </div>
+    <div class="code-box" id="winUninstall">Get-ScheduledTask -TaskName "TenshiGuardAgent" -ErrorAction SilentlyContinue
+      | Unregister-ScheduledTask -Force; Remove-Item -Path "C:\TenshiGuard" -Recurse -Force -ErrorAction
+      SilentlyContinue</div>
 
     <button class="copy-btn danger" onclick="copyFrom('winUninstall', this)">
       <i class="fa-solid fa-trash-can"></i> Copy Uninstall Command
