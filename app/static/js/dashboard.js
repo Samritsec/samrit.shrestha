@@ -303,7 +303,7 @@ document.addEventListener("DOMContentLoaded", () => {
           }[sev] || "secondary";
 
         tr.innerHTML = `
-          <td class="small text-muted">
+          <td class="small">
             ${escapeHtml(ev.ts || "-")}
           </td>
           <td class="small">

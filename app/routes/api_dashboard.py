@@ -3,29 +3,23 @@
 #  TenshiGuard Admin Dashboard API
 #  - /api/dashboard/summary
 #  - /api/dashboard/failed-logins-trend
+#  - /api/dashboard/top-devices
 # ============================================================
 
-from datetime import datetime, timedelta
-
-from flask import Blueprint, jsonify
+from datetime import datetime, timedelta, timezone
+from flask import Blueprint, jsonify, current_app
 from flask_login import login_required, current_user
 from sqlalchemy import func
-
 from app.extensions import db
-from app.models import Device, Event, AISignal
+from app.models import Device, Event, Alert, AISignal
 
 # This name MUST match the one used in app/__init__.py optional_routes
 api_dash = Blueprint("api_dash", __name__)
-
 
 # ------------------------------------------------------------
 # Helper: resolve organization_id safely
 # ------------------------------------------------------------
 def _get_org_id():
-    """
-    Returns the current user's organization_id (for multi-tenant safety).
-    If something is wrong, returns None.
-    """
     try:
         if not current_user.is_authenticated:
             return None
@@ -33,6 +27,8 @@ def _get_org_id():
     except Exception:
         return None
 
+def _utc_now():
+    return datetime.now(timezone.utc)
 
 # ------------------------------------------------------------
 # GET /api/dashboard/summary
@@ -40,111 +36,58 @@ def _get_org_id():
 @api_dash.route("/dashboard/summary", methods=["GET"])
 @login_required
 def dashboard_summary():
-    """
-    Returns high-level metrics for the admin dashboard:
-
-    - total_devices
-    - online_devices
-    - offline_devices
-    - events_24h
-    - high_critical_24h
-    - failed_logins_24h
-    - last_threat (from AISignal if any)
-    """
     org_id = _get_org_id()
     if not org_id:
-        return jsonify({"ok": False, "error": "No organization context"}), 400
+        return jsonify({"status": "error", "message": "No organization context"}), 400
 
-    now = datetime.utcnow()
+    now = _utc_now()
     window_24h = now - timedelta(hours=24)
 
-    # Devices
-    total_devices = (
-        db.session.query(func.count(Device.id))
-        .filter(Device.organization_id == org_id)
-        .scalar()
-        or 0
-    )
-    online_devices = (
-        db.session.query(func.count(Device.id))
-        .filter(
-            Device.organization_id == org_id,
-            Device.status == "online",
-        )
-        .scalar()
-        or 0
-    )
+    # 1. Devices
+    total_devices = db.session.query(func.count(Device.id)).filter_by(organization_id=org_id).scalar() or 0
+    online_devices = db.session.query(func.count(Device.id)).filter_by(organization_id=org_id, status="online").scalar() or 0
     offline_devices = max(total_devices - online_devices, 0)
 
-    # Events in last 24h
-    events_24h = (
-        db.session.query(func.count(Event.id))
-        .filter(
-            Event.organization_id == org_id,
-            Event.ts >= window_24h,
-        )
-        .scalar()
-        or 0
-    )
+    # 2. Events (Alerts)
+    events_24h = db.session.query(func.count(Alert.id)).filter(
+        Alert.organization_id == org_id,
+        Alert.created_at >= window_24h
+    ).scalar() or 0
 
-    high_critical_24h = (
-        db.session.query(func.count(Event.id))
-        .filter(
-            Event.organization_id == org_id,
-            Event.ts >= window_24h,
-            Event.severity.in_(["high", "critical"]),
-        )
-        .scalar()
-        or 0
-    )
+    failed_logins_24h = db.session.query(func.count(Alert.id)).filter(
+        Alert.organization_id == org_id,
+        Alert.category == "auth",
+        Alert.created_at >= window_24h
+    ).scalar() or 0
 
-    # Failed logins from AISignal (auth category)
-    failed_logins_24h = (
-        db.session.query(func.count(AISignal.id))
-        .filter(
-            AISignal.organization_id == org_id,
-            AISignal.category == "auth",
-            AISignal.ts >= window_24h,
-        )
-        .scalar()
-        or 0
-    )
+    # Severity Breakdown
+    severities = ["critical", "high", "medium", "low", "info"]
+    by_severity = {}
+    for sev in severities:
+        count = db.session.query(func.count(Alert.id)).filter(
+            Alert.organization_id == org_id,
+            Alert.severity == sev,
+            Alert.created_at >= window_24h
+        ).scalar() or 0
+        by_severity[sev] = count
 
-    # Last AI threat (if any)
-    last_threat = None
-    last_signal = (
-        db.session.query(AISignal)
-        .filter(AISignal.organization_id == org_id)
-        .order_by(AISignal.ts.desc())
-        .first()
-    )
-    if last_signal:
-        last_threat = {
-            "id": last_signal.id,
-            "category": last_signal.category,
-            "severity": last_signal.severity,
-            "rule_name": last_signal.rule_name,
-            "detail": last_signal.detail,
-            "risk_score": last_signal.risk_score,
-            "ts": last_signal.ts.strftime("%Y-%m-%d %H:%M:%S")
-            if last_signal.ts
-            else None,
-        }
+    # --------------------------------------------------------
+    # 🧪 MOCK DATA INJECTION REMOVED
+    # --------------------------------------------------------
 
-    return jsonify(
-        {
-            "ok": True,
-            "organization_id": org_id,
-            "total_devices": total_devices,
-            "online_devices": online_devices,
-            "offline_devices": offline_devices,
-            "events_24h": events_24h,
-            "high_critical_24h": high_critical_24h,
+    return jsonify({
+        "status": "ok",
+        "devices": {
+            "total": total_devices,
+            "online": online_devices,
+            "offline": offline_devices
+        },
+        "events": {
+            "last_24h": events_24h,
             "failed_logins_24h": failed_logins_24h,
-            "last_threat": last_threat,
+            "by_severity": by_severity
         }
-    )
-
+    })
 
 # ------------------------------------------------------------
 # GET /api/dashboard/failed-logins-trend
@@ -152,48 +95,99 @@ def dashboard_summary():
 @api_dash.route("/dashboard/failed-logins-trend", methods=["GET"])
 @login_required
 def failed_logins_trend():
-    """
-    Returns time-series data for failed login attempts based on AISignal.
-
-    Response format:
-    {
-      "ok": true,
-      "labels": ["2025-11-25 20:00", "2025-11-25 21:00", ...],
-      "values": [3, 7, ...]
-    }
-    """
     org_id = _get_org_id()
     if not org_id:
-        return jsonify({"ok": False, "error": "No organization context"}), 400
+        return jsonify({"status": "error", "message": "No organization context"}), 400
 
-    now = datetime.utcnow()
+    now = _utc_now()
     window_24h = now - timedelta(hours=24)
 
-    # SQLite-friendly time bucket: by hour
-    # For Postgres later we can swap to date_trunc('hour', AISignal.ts)
+    # Query Alerts (not AISignal) for auth failures
     rows = (
         db.session.query(
-            func.strftime("%Y-%m-%d %H:00", AISignal.ts).label("bucket"),
-            func.count(AISignal.id).label("count"),
+            func.strftime("%H:00", Alert.created_at).label("bucket"),
+            func.count(Alert.id).label("count"),
         )
         .filter(
-            AISignal.organization_id == org_id,
-            AISignal.category == "auth",
-            AISignal.ts >= window_24h,
+            Alert.organization_id == org_id,
+            Alert.category == "auth",
+            Alert.created_at >= window_24h,
         )
         .group_by("bucket")
         .order_by("bucket")
         .all()
     )
 
-    labels = [r.bucket for r in rows]
-    values = [r.count for r in rows]
+    points = [{"bucket": r.bucket, "count": r.count} for r in rows]
 
-    return jsonify(
-        {
-            "ok": True,
-            "organization_id": org_id,
-            "labels": labels,
-            "values": values,
-        }
-    )
+    # --------------------------------------------------------
+    # 🧪 MOCK DATA INJECTION REMOVED
+    # --------------------------------------------------------
+
+    return jsonify({
+        "status": "ok",
+        "points": points
+    })
+
+# ------------------------------------------------------------
+# GET /api/dashboard/top-devices
+# ------------------------------------------------------------
+@api_dash.route("/dashboard/top-devices", methods=["GET"])
+@login_required
+def top_devices():
+    org_id = _get_org_id()
+    if not org_id:
+        return jsonify({"status": "error", "message": "No organization context"}), 400
+
+    devices = Device.query.filter_by(organization_id=org_id).limit(10).all()
+    
+    items = []
+    for d in devices:
+        # Count events for this device
+        evt_count = Alert.query.filter_by(device_id=d.id).count()
+        items.append({
+            "device_name": d.device_name,
+            "mac": d.mac,
+            "os": d.os,
+            "status": d.status,
+            "events": evt_count
+        })
+
+    # --------------------------------------------------------
+    # 🧪 MOCK DATA INJECTION REMOVED
+    # --------------------------------------------------------
+
+    return jsonify({
+        "status": "ok",
+        "items": items
+    })
+
+# ------------------------------------------------------------
+# GET /api/dashboard/history
+# ------------------------------------------------------------
+@api_dash.route("/dashboard/history", methods=["GET"])
+@login_required
+def dashboard_history():
+    org_id = _get_org_id()
+    if not org_id:
+        return jsonify({"status": "error", "message": "No organization context"}), 400
+
+    alerts = Alert.query.filter_by(organization_id=org_id).order_by(Alert.created_at.desc()).limit(10).all()
+    
+    items = []
+    for a in alerts:
+        items.append({
+            "ts": a.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            "severity": a.severity,
+            "category": a.category,
+            "detail": a.title or a.message
+        })
+
+    # --------------------------------------------------------
+    # 🧪 MOCK DATA INJECTION REMOVED
+    # --------------------------------------------------------
+
+    return jsonify({
+        "status": "ok",
+        "items": items
+    })

@@ -1,12 +1,32 @@
 {% extends "dashboard/base_dashboard.html" %}
 
 {% block dash_content %}
+<style>
+  /* Super-aggressive override to force transparent background on table elements */
+  .tg-card table,
+  .tg-card table>*,
+  .tg-card table>*>*,
+  .tg-card table>*>*>* {
+    background-color: transparent !important;
+    color: #e2e8f0 !important;
+    --bs-table-bg: transparent !important;
+    --bs-table-accent-bg: transparent !important;
+    --bs-table-striped-bg: transparent !important;
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.05) !important;
+  }
+
+  .tg-card table th,
+  .tg-card table td {
+    background-color: transparent !important;
+  }
+</style>
+
 <div class="container-fluid">
   <!-- Header -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-      <h4 class="mb-1 fw-bold">Device Management</h4>
-      <p class="text-muted mb-0">Monitor and manage connected endpoints.</p>
+      <h4 class="mb-1 fw-bold text-body">Device Management</h4>
+      <p class="text-muted mb-0 fw-bold">Monitor and manage connected endpoints.</p>
     </div>
     <div class="d-flex gap-2">
       <a href="{{ url_for('dashboard.setup_agent_page') }}" class="btn btn-accent">
@@ -22,7 +42,7 @@
         <div class="d-flex justify-content-between align-items-center">
           <div>
             <div class="text-muted small text-uppercase fw-bold">Total Devices</div>
-            <h3 class="mb-0 fw-bold">{{ stats.total }}</h3>
+            <h3 class="mb-0 fw-bold text-body">{{ stats.total }}</h3>
           </div>
           <div class="text-primary opacity-50"><i class="fa-solid fa-desktop fa-2x"></i></div>
         </div>
@@ -94,19 +114,19 @@
   </div>
 
   <!-- Devices Table -->
-  <div class="tg-card">
+  <div class="tg-card" style="background-color: #0a0e17 !important; color: #e2e8f0 !important;">
     <div class="table-responsive">
       <table class="table table-hover align-middle mb-0">
         <thead>
           <tr>
-            <th>Device Name</th>
-            <th>IP Address</th>
-            <th>MAC Address</th>
-            <th>OS</th>
-            <th>Status</th>
-            <th>Risk Level</th>
-            <th>Last Seen</th>
-            <th>Actions</th>
+            <th class="fw-bold text-light">Device Name</th>
+            <th class="fw-bold text-light">IP Address</th>
+            <th class="fw-bold text-light">MAC Address</th>
+            <th class="fw-bold text-light">OS</th>
+            <th class="fw-bold text-light">Status</th>
+            <th class="fw-bold text-light">Risk Level</th>
+            <th class="fw-bold text-light">Last Seen</th>
+            <th class="fw-bold text-light">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -122,18 +142,18 @@
                   {% elif device.os|lower == 'macos' %}
                   <i class="fa-brands fa-apple fa-lg text-light"></i>
                   {% else %}
-                  <i class="fa-solid fa-desktop fa-lg text-muted"></i>
+                  <i class="fa-solid fa-desktop fa-lg text-light"></i>
                   {% endif %}
                 </div>
                 <div>
-                  <div class="fw-bold">{{ device.device_name }}</div>
+                  <div class="fw-bold text-light">{{ device.device_name }}</div>
                   <div class="small text-muted">ID: {{ device.id }}</div>
                 </div>
               </div>
             </td>
-            <td class="font-monospace small">{{ device.ip or 'N/A' }}</td>
-            <td class="font-monospace small">{{ device.mac }}</td>
-            <td>{{ device.os }}</td>
+            <td class="font-monospace small text-light">{{ device.ip or 'N/A' }}</td>
+            <td class="font-monospace small text-light">{{ device.mac }}</td>
+            <td class="text-light">{{ device.os }}</td>
             <td>
               {% if device.status == 'online' %}
               <span class="badge bg-success"><i class="fa-solid fa-circle me-1"></i> Online</span>

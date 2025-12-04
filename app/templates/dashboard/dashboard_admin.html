@@ -1,12 +1,32 @@
 {% extends "dashboard/base_dashboard.html" %}
+
 {% block dash_content %}
+<style>
+  /* Super-aggressive override to force transparent background on table elements */
+  .tg-panel table,
+  .tg-panel table>*,
+  .tg-panel table>*>*,
+  .tg-panel table>*>*>* {
+    background-color: transparent !important;
+    color: #e2e8f0 !important;
+    --bs-table-bg: transparent !important;
+    --bs-table-accent-bg: transparent !important;
+    --bs-table-striped-bg: transparent !important;
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.05) !important;
+  }
+
+  .tg-panel table th,
+  .tg-panel table td {
+    background-color: transparent !important;
+  }
+</style>
 
 <div class="container-fluid px-0">
 
   <!-- HEADER -->
   <div class="tg-section-header mt-2 mb-4">
-    <h3 class="fw-bold text-accent mb-0">
-      <i class="fa-solid fa-shield-halved me-2"></i>
+    <h3 class="fw-bold mb-0 text-body">
+      <i class="fa-solid fa-shield-halved me-2 text-accent"></i>
       Admin Dashboard
     </h3>
     <p class="text-muted small">Realtime monitoring of devices, events, and suspicious activity.</p>
@@ -17,29 +37,29 @@
 
     <div class="col-md-3">
       <div class="tg-metric-card">
-        <div class="label">TOTAL DEVICES</div>
-        <div class="value">{{ agg.total }}</div>
+        <div class="label text-muted small text-uppercase fw-bold">TOTAL DEVICES</div>
+        <div class="value fw-bold text-body" id="metric-total-devices">{{ agg.total }}</div>
       </div>
     </div>
 
     <div class="col-md-3">
       <div class="tg-metric-card">
-        <div class="label">ONLINE</div>
-        <div class="value text-success">{{ agg.online }}</div>
+        <div class="label text-muted small text-uppercase fw-bold">ONLINE</div>
+        <div class="value fw-bold text-success" id="metric-online-devices">{{ agg.online }}</div>
       </div>
     </div>
 
     <div class="col-md-3">
       <div class="tg-metric-card">
-        <div class="label">OFFLINE</div>
-        <div class="value text-danger">{{ agg.offline }}</div>
+        <div class="label text-muted small text-uppercase fw-bold">OFFLINE</div>
+        <div class="value fw-bold text-danger" id="metric-offline-devices">{{ agg.offline }}</div>
       </div>
     </div>
 
     <div class="col-md-3">
       <div class="tg-metric-card">
-        <div class="label">EVENTS (24H)</div>
-        <div class="value text-info">{{ events|length }}</div>
+        <div class="label text-muted small text-uppercase fw-bold">EVENTS (24H)</div>
+        <div class="value fw-bold text-info" id="metric-last24-events">{{ events|length }}</div>
       </div>
     </div>
 
@@ -49,14 +69,18 @@
   <div class="row g-3 mt-1">
     <div class="col-md-3">
       <div class="tg-metric-card">
-        <div class="label">FAILED LOGINS (24H)</div>
-        <div class="value text-warning">{{ agg.unusual }}</div>
+        <div class="label text-muted small text-uppercase fw-bold">FAILED LOGINS (24H)</div>
+        <div class="value fw-bold text-warning" id="metric-failed-logins">{{ agg.unusual }}</div>
       </div>
+    </div>
+    <div class="col-md-3 d-flex align-items-end">
+      <span id="trend-badge" class="badge bg-secondary mb-2">Loading trend...</span>
     </div>
   </div>
 
-  <!-- FAILED LOGIN TREND CHART -->
+  <!-- CHARTS ROW 1 -->
   <div class="row g-4 mt-2">
+    <!-- FAILED LOGIN TREND CHART -->
     <div class="col-md-12">
       <div class="tg-panel">
         <div class="panel-header">
@@ -91,7 +115,10 @@
         </div>
       </div>
     </div>
+  </div>
 
+  <!-- CHARTS ROW 2 -->
+  <div class="row g-4 mt-3">
     <!-- PERFORMANCE CHART -->
     <div class="col-md-12">
       <div class="tg-panel">
@@ -105,138 +132,132 @@
     </div>
   </div>
 
-  <!-- TABLES -->
+  <!-- TABLES ROW -->
   <div class="row g-4 mt-3">
 
     <!-- Top Devices -->
     <div class="col-md-6">
-      <!-- Latest Events -->
-      <div class="col-md-6">
-        <div class="tg-panel">
-
+      <div class="tg-panel" style="background-color: #0a0e17 !important; color: #e2e8f0 !important;">
+        <div class="panel-header">
+          <span><i class="fa-solid fa-server me-2 text-primary"></i>Top Devices</span>
         </div>
+        <div class="panel-body p-0">
+          <div class="table-responsive" style="max-height: 300px;">
+            <table class="table table-hover table-striped align-middle mb-0">
+              <thead>
+                <tr>
+                  <th class="text-light">Device</th>
+                  <th class="text-light">Events</th>
+                  <th class="text-light">OS</th>
+                  <th class="text-light">Status</th>
+                </tr>
+              </thead>
+              <tbody id="top-devices-body">
+                <tr>
+                  <td colspan="4" class="text-center text-light py-3">Loading devices...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
 
-        <script>
-          const chartData = {{ chart_data | tojson | safe }};
-          const getCssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    <!-- Latest Events -->
+    <div class="col-md-6">
+      <div class="tg-panel" style="background-color: #0a0e17 !important; color: #e2e8f0 !important;">
+        <div class="panel-header">
+          <span><i class="fa-solid fa-list me-2 text-secondary"></i>Latest Events</span>
+        </div>
+        <div class="panel-body p-0">
+          <div class="table-responsive" style="max-height: 300px;">
+            <table class="table table-hover table-striped align-middle mb-0">
+              <thead>
+                <tr>
+                  <th class="text-light">Time</th>
+                  <th class="text-light">Severity</th>
+                  <th class="text-light">Category</th>
+                  <th class="text-light">Detail</th>
+                </tr>
+              </thead>
+              <tbody id="latest-events-body">
+                <tr>
+                  <td colspan="4" class="text-center text-light py-3">Loading events...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
 
-          const colors = {
-            secondary: getCssVar('--tg-accent-secondary') || '#bc13fe',
-            success: getCssVar('--tg-accent-success') || '#00ff9d',
-            warning: getCssVar('--tg-accent-warning') || '#ffb600',
-            danger: getCssVar('--tg-accent-danger') || '#ff0055',
-            info: getCssVar('--tg-accent-info') || '#2f80ed',
-            text: getCssVar('--tg-text-main') || '#e6edf3',
-            grid: 'rgba(255, 255, 255, 0.05)'
-          };
+  </div>
 
-          const commonOptions = {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { labels: { color: colors.text, font: { family: 'Inter' } } }
-            },
-            scales: {
-              x: { grid: { color: colors.grid }, ticks: { color: colors.text } },
-              y: { grid: { color: colors.grid }, ticks: { color: colors.text } }
-            }
-          };
+</div>
+{% endblock %}
 
-          // 1. Events by Severity (Doughnut)
-          const ctxSeverity = document.getElementById("chart-severity").getContext("2d");
-          new Chart(ctxSeverity, {
-            type: "doughnut",
-            data: {
-              labels: ["Critical", "High", "Medium", "Low", "Info"],
-              datasets: [{
-                data: chartData.severityCounts || [0, 0, 0, 0, 0],
-                backgroundColor: [colors.danger, '#ff5e00', colors.warning, colors.success, colors.info],
-                borderColor: 'transparent',
-                hoverOffset: 10
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: { legend: { position: 'right', labels: { color: colors.text } } },
-              cutout: '70%'
-            }
-          });
+{% block extra_js %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // We only handle the "System Performance Trend" here because dashboard.js
+    // handles the others (Severity, OS, Failed Logins) via API.
 
-          // 2. OS Chart (Doughnut)
-          const ctxOS = document.getElementById("chart-os").getContext("2d");
-          new Chart(ctxOS, {
-            type: "doughnut",
-            data: {
-              labels: ["Windows", "Linux", "macOS", "Other"],
-              datasets: [{
-                data: chartData.osCounts || [0, 0, 0, 0],
-                backgroundColor: [colors.info, colors.warning, colors.secondary, '#6c757d'],
-                borderColor: 'transparent',
-                hoverOffset: 10
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: { legend: { position: 'right', labels: { color: colors.text } } },
-              cutout: '70%'
-            }
-          });
+    const chartData = {{ chart_data | tojson | safe
+  }};
+  const getCssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
-          // 3. Failed Logins Trend (Line with Area)
-          const ctxLogin = document.getElementById("chart-failed-logins").getContext("2d");
+  const colors = {
+    secondary: getCssVar('--tg-accent-secondary') || '#bc13fe',
+    success: getCssVar('--tg-accent-success') || '#00ff9d',
+    warning: getCssVar('--tg-accent-warning') || '#ffb600',
+    danger: getCssVar('--tg-accent-danger') || '#ff0055',
+    info: getCssVar('--tg-accent-info') || '#2f80ed',
+    text: getCssVar('--tg-text-main') || '#e6edf3',
+    grid: 'rgba(255, 255, 255, 0.05)'
+  };
 
-          // Create gradient
-          const gradient = ctxLogin.createLinearGradient(0, 0, 0, 400);
-          gradient.addColorStop(0, 'rgba(255, 182, 0, 0.4)');
-          gradient.addColorStop(1, 'rgba(255, 182, 0, 0)');
+  const commonOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { labels: { color: colors.text, font: { family: 'Inter' } } }
+    },
+    scales: {
+      x: { grid: { color: colors.grid }, ticks: { color: colors.text } },
+      y: { grid: { color: colors.grid }, ticks: { color: colors.text } }
+    }
+  };
 
-          new Chart(ctxLogin, {
-            type: "line",
-            data: {
-              labels: ["-20h", "-16h", "-12h", "-8h", "-4h", "Now"],
-              datasets: [{
-                label: "Failed Logins",
-                data: chartData.failedLogins || [0, 0, 0, 0, 0, 0],
-                borderColor: colors.warning,
-                backgroundColor: gradient,
-                borderWidth: 2,
-                pointBackgroundColor: colors.warning,
-                pointBorderColor: '#fff',
-                fill: true,
-                tension: 0.4
-              }]
-            },
-            options: commonOptions
-          });
-
-          // 4. Performance Trend (Line)
-          const ctxPerf = document.getElementById("chart-performance").getContext("2d");
-          new Chart(ctxPerf, {
-            type: "line",
-            data: {
-              labels: ["-20h", "-16h", "-12h", "-8h", "-4h", "Now"],
-              datasets: [
-                {
-                  label: "Avg CPU %",
-                  data: chartData.cpuTrend || [0, 0, 0, 0, 0, 0],
-                  borderColor: colors.info,
-                  backgroundColor: 'transparent',
-                  borderWidth: 2,
-                  tension: 0.4
-                },
-                {
-                  label: "Avg Mem %",
-                  data: chartData.memTrend || [0, 0, 0, 0, 0, 0],
-                  borderColor: colors.secondary,
-                  backgroundColor: 'transparent',
-                  borderWidth: 2,
-                  tension: 0.4
-                }
-              ]
-            },
-            options: commonOptions
-          });
-        </script>
-        {% endblock %}
+  // 4. Performance Trend (Line)
+  // This is NOT handled by dashboard.js, so we render it here using server-side data (or mock).
+  const ctxPerf = document.getElementById("chart-performance");
+  if (ctxPerf) {
+    new Chart(ctxPerf.getContext("2d"), {
+      type: "line",
+      data: {
+        labels: ["-20h", "-16h", "-12h", "-8h", "-4h", "Now"],
+        datasets: [
+          {
+            label: "Avg CPU %",
+            data: chartData.cpuTrend || [0, 0, 0, 0, 0, 0],
+            borderColor: colors.info,
+            backgroundColor: 'transparent',
+            borderWidth: 2,
+            tension: 0.4
+          },
+          {
+            label: "Avg Mem %",
+            data: chartData.memTrend || [0, 0, 0, 0, 0, 0],
+            borderColor: colors.secondary,
+            backgroundColor: 'transparent',
+            borderWidth: 2,
+            tension: 0.4
+          }
+        ]
+      },
+      options: commonOptions
+    });
+  }
+  });
+</script>
+{% endblock %}

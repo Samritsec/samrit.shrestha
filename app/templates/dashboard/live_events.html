@@ -1,6 +1,26 @@
 {% extends "dashboard/base_dashboard.html" %}
 
 {% block dash_content %}
+<style>
+  /* Super-aggressive override to force transparent background on table elements */
+  .tg-panel table,
+  .tg-panel table>*,
+  .tg-panel table>*>*,
+  .tg-panel table>*>*>* {
+    background-color: transparent !important;
+    color: #e2e8f0 !important;
+    --bs-table-bg: transparent !important;
+    --bs-table-accent-bg: transparent !important;
+    --bs-table-striped-bg: transparent !important;
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.05) !important;
+  }
+
+  .tg-panel table th,
+  .tg-panel table td {
+    background-color: transparent !important;
+  }
+</style>
+
 <div class="container-fluid">
   <!-- Header -->
   <div class="d-flex justify-content-between align-items-center mb-4">

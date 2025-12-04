@@ -86,12 +86,15 @@ def register_agent():
     if not org:
         return json_error("Invalid organization token", 404)
 
-    device = Device.query.filter_by(organization_id=org.id, mac=mac).first()
+    # Lookup by MAC only (globally unique) to prevent IntegrityError
+    device = Device.query.filter_by(mac=mac).first()
 
     cpu = to_float(data.get("cpu_percent"), 0.0)
     mem = to_float(data.get("mem_percent"), 0.0)
 
     if device:
+        # Update organization if changed (Device moved/re-registered)
+        device.organization_id = org.id
         device.device_name = hostname
         device.os = os_name
         device.ip = ip_addr
@@ -176,9 +179,14 @@ def heartbeat():
     if not org:
         return json_error("Invalid organization token", 404)
 
-    device = Device.query.filter_by(organization_id=org.id, mac=mac).first()
+    # Lookup by MAC only (globally unique)
+    device = Device.query.filter_by(mac=mac).first()
     if not device:
         return json_error("Device not registered. Call /register first.", 404)
+
+    # Auto-correct organization if mismatch (e.g. token changed)
+    if device.organization_id != org.id:
+        device.organization_id = org.id
 
     # -------------------------
     # Update device

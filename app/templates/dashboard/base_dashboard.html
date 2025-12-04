@@ -5,7 +5,8 @@
   <!-- Sidebar -->
   <div class="sidebar border-end d-flex flex-column p-3" id="sidebar-wrapper" style="width: 220px; min-height: 100vh;">
     <div class="sidebar-heading text-white fw-bold mb-4 fs-4 d-flex align-items-center">
-      <i class="fa-solid fa-shield-halved me-2 text-accent"></i> TenshiGuard
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" width="32" height="32" class="me-2">
+      TenshiGuard
     </div>
 
     <ul class="nav flex-column mb-auto">
@@ -37,6 +38,12 @@
         <a href="{{ url_for('dashboard.ai_insights_dashboard') }}"
           class="nav-link text-white {% if 'ai_insights' in request.endpoint %}active{% endif %}">
           <i class="fa-solid fa-brain me-2"></i> AI Insights
+        </a>
+      </li>
+      <li class="nav-item mb-1">
+        <a href="{{ url_for('dashboard.ai_training') }}"
+          class="nav-link text-white {% if 'ai_training' in request.endpoint %}active{% endif %}">
+          <i class="fa-solid fa-graduation-cap me-2"></i> AI Training
         </a>
       </li>
       {% if sub and sub.sos_enabled %}
@@ -102,6 +109,26 @@
 </div>
 
 <!-- SOS Modal -->
+<style>
+  /* Super-aggressive override to force transparent background on SOS modal table */
+  #modalSOS .tg-card table,
+  #modalSOS .tg-card table>*,
+  #modalSOS .tg-card table>*>*,
+  #modalSOS .tg-card table>*>*>* {
+    background-color: transparent !important;
+    color: #e2e8f0 !important;
+    --bs-table-bg: transparent !important;
+    --bs-table-accent-bg: transparent !important;
+    --bs-table-striped-bg: transparent !important;
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.05) !important;
+  }
+
+  #modalSOS .tg-card table th,
+  #modalSOS .tg-card table td {
+    background-color: transparent !important;
+  }
+</style>
+
 <div class="modal fade" id="modalSOS" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-scrollable">
     <div class="modal-content tg-card shadow-card">

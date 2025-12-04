@@ -7,8 +7,8 @@
     <!-- HEADER -->
     <div class="tg-section-header mt-2 mb-4 d-flex justify-content-between align-items-center">
         <div>
-            <h3 class="fw-bold text-accent mb-0">
-                <i class="fa-solid fa-brain me-2"></i>
+            <h3 class="fw-bold mb-0 text-body">
+                <i class="fa-solid fa-brain me-2 text-accent"></i>
                 AI Training Center
             </h3>
             <p class="text-muted small mb-0">Monitor model accuracy, learning progress, and global threat intelligence.
@@ -30,7 +30,7 @@
                 <div class="position-relative d-inline-block">
                     <canvas id="accuracyChart" width="150" height="150"></canvas>
                     <div class="position-absolute top-50 start-50 translate-middle">
-                        <h2 class="fw-bold text-white mb-0">{{ stats.accuracy }}%</h2>
+                        <h2 class="fw-bold mb-0 text-body">{{ stats.accuracy }}%</h2>
                     </div>
                 </div>
                 <p class="text-muted small mt-3 mb-0">Based on {{ stats.total_learned }} feedback points</p>
@@ -43,7 +43,7 @@
                 <h6 class="text-muted text-uppercase small fw-bold mb-3">Learning Progress</h6>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <span class="text-success"><i class="fa-solid fa-thumbs-up me-2"></i>True Positives</span>
-                    <span class="fw-bold text-white">{{ stats.true_positives }}</span>
+                    <span class="fw-bold text-body">{{ stats.true_positives }}</span>
                 </div>
                 <div class="progress bg-dark mb-4" style="height: 6px;">
                     <div class="progress-bar bg-success" role="progressbar"
@@ -53,7 +53,7 @@
 
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <span class="text-danger"><i class="fa-solid fa-thumbs-down me-2"></i>False Positives</span>
-                    <span class="fw-bold text-white">{{ stats.false_positives }}</span>
+                    <span class="fw-bold text-body">{{ stats.false_positives }}</span>
                 </div>
                 <div class="progress bg-dark" style="height: 6px;">
                     <div class="progress-bar bg-danger" role="progressbar"
@@ -71,7 +71,7 @@
                 </div>
                 <div class="list-group list-group-flush">
                     {% for threat in threats %}
-                    <div class="list-group-item bg-transparent border-secondary text-light">
+                    <div class="list-group-item bg-transparent border-secondary text-body">
                         <div class="d-flex w-100 justify-content-between">
                             <h6 class="mb-1 fw-bold text-warning">{{ threat.name }}</h6>
                             <small class="text-muted">{{ threat.region }}</small>
@@ -96,10 +96,10 @@
                 <table class="table table-dark table-hover mb-0 align-middle">
                     <thead>
                         <tr>
-                            <th class="ps-4">Rule Name</th>
-                            <th>Weight Modifier</th>
-                            <th>Feedback Count</th>
-                            <th>Last Updated</th>
+                            <th class="ps-4 text-body">Rule Name</th>
+                            <th class="text-body">Weight Modifier</th>
+                            <th class="text-body">Feedback Count</th>
+                            <th class="text-body">Last Updated</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -115,7 +115,7 @@
                                     <span class="badge bg-secondary">0.0</span>
                                     {% endif %}
                             </td>
-                            <td>{{ rule.feedback_count }}</td>
+                            <td class="text-body">{{ rule.feedback_count }}</td>
                             <td class="text-muted">{{ rule.last_updated.strftime('%Y-%m-%d %H:%M') }}</td>
                         </tr>
                         {% else %}

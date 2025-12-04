@@ -70,54 +70,21 @@
 body {
   background-color: var(--tg-bg-main);
   color: var(--tg-text-main);
-  font-family: var(--tg-font-main);
-  margin: 0;
-  overflow-x: hidden;
-  transition: background-color 0.3s ease, color 0.3s ease;
-
-  /* Tech Grid Background */
-  background-image:
-    linear-gradient(var(--tg-grid-color) 1px, transparent 1px),
-    linear-gradient(90deg, var(--tg-grid-color) 1px, transparent 1px);
-  background-size: 40px 40px;
-}
-
-a {
-  text-decoration: none;
-  transition: all 0.2s;
-}
-
-/* --- SIDEBAR --- */
-.sidebar {
-  background-color: var(--tg-bg-panel) !important;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-right: 1px solid var(--tg-border) !important;
-}
-
-.sidebar .nav-link {
-  color: var(--tg-text-muted) !important;
-  font-weight: 500;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  transition: all 0.2s ease;
-}
-
-.sidebar .nav-link:hover {
-  background-color: var(--tg-bg-hover);
-  color: var(--tg-text-main) !important;
-  transform: translateX(4px);
-}
-
-.sidebar .nav-link.active {
-  background: rgba(0, 243, 255, 0.1);
-  /* Cyan tint */
-  color: var(--tg-accent-primary) !important;
   border-left: 3px solid var(--tg-accent-primary);
   box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
+}
+
+/* Enforce Theme Colors on Bootstrap Utilities */
+.text-body {
+  color: var(--tg-text-main) !important;
+}
+
+.text-muted {
+  color: var(--tg-text-muted) !important;
+}
+
+.text-secondary {
+  color: var(--tg-text-muted) !important;
 }
 
 [data-theme="light"] .sidebar .nav-link.active {
@@ -142,6 +109,7 @@ a {
   padding: 1.5rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   backdrop-filter: blur(12px);
+  color: var(--tg-text-main);
 }
 
 /* --- TYPOGRAPHY UTILS --- */
@@ -161,20 +129,6 @@ a {
   color: var(--tg-accent-warning) !important;
 }
 
-.text-danger {
-  color: var(--tg-accent-danger) !important;
-}
-
-.text-muted {
-  color: var(--tg-text-muted) !important;
-}
-
-/* Hover Glow Effect for Cards */
-.tg-card:hover {
-  border-color: var(--tg-accent-primary);
-  box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
-}
-
 [data-theme="light"] .tg-card:hover {
   border-color: var(--tg-accent-primary);
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
@@ -187,60 +141,6 @@ a {
 }
 
 .tg-main {
-  flex: 1;
-  padding: 2rem;
-  overflow-y: auto;
-}
-
-
-.metric-label {
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-size: 0.75rem;
-  color: var(--tg-text-muted);
-  font-weight: 600;
-}
-
-/* --- TABLES --- */
-.table {
-  --bs-table-bg: transparent;
-  --bs-table-color: var(--tg-text-main);
-  --bs-table-border-color: var(--tg-border);
-}
-
-.table thead th {
-  background-color: rgba(0, 0, 0, 0.2) !important;
-  color: var(--tg-text-muted);
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-  border-bottom: 1px solid var(--tg-border);
-}
-
-[data-theme="light"] .table thead th {
-  background-color: rgba(0, 0, 0, 0.03) !important;
-}
-
-.table tbody tr {
-  transition: background-color 0.2s ease;
-}
-
-.table tbody tr:hover {
-  background-color: var(--tg-bg-hover) !important;
-}
-
-.table td {
-  vertical-align: middle;
-  border-bottom: 1px solid var(--tg-border);
-}
-
-/* --- BADGES --- */
-.badge {
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  padding: 0.4em 0.8em;
-  border-radius: 6px;
   backdrop-filter: blur(4px);
 }
 
@@ -283,6 +183,7 @@ a {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 243, 255, 0.5);
   color: #000;
+  font-weight: 700;
 }
 
 .btn-outline-light {

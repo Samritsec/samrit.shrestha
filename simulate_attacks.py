@@ -1,188 +1,148 @@
-import requests
-import json
-import time
 import random
-import sys
-from app import create_app
-from app.models import Organization, Device
-from app.extensions import db
+from datetime import datetime, timedelta, timezone
+from app import create_app, db
+from app.models.user import User
+from app.models.device import Device
+from app.models.alert import Alert
+from app.models.ai_signal import AISignal
+from app.models.event import Event
 
-# Configuration
-BASE_URL = "http://127.0.0.1:5002"
-API_ENDPOINT = f"{BASE_URL}/api/agent/ai/event"
-
-def get_org_token():
-    """Fetch the first organization's agent token from the DB."""
+def simulate_attacks():
     app = create_app()
     with app.app_context():
-        org = Organization.query.first()
-        if not org:
-            print("Error: No organization found in DB.")
-            sys.exit(1)
+        print("--- Starting Attack Simulation ---")
         
-        # Ensure agent_token exists
-        if not org.agent_token:
-            import secrets
-            org.agent_token = secrets.token_hex(16)
-            db.session.commit()
-            print(f"Generated new token for {org.name}")
+        # 1. Target User & Organization
+        user = User.query.filter_by(email="testorg1@gmail.com").first()
+        if not user:
+            print("Error: User 'testorg1@gmail.com' not found.")
+            return
+
+        org_id = user.organization_id
+        print(f"Target Org ID: {org_id}")
+
+        # 2. Target Device (Prefer real agent, fallback to Simulated-PC)
+        device = Device.query.filter_by(organization_id=org_id).order_by(Device.last_seen.desc()).first()
+        if not device:
+            print("Error: No device found for this organization.")
+            return
+        
+        print(f"Target Device: {device.device_name} (ID: {device.id})")
+
+        now = datetime.now(timezone.utc)
+        
+        # --- Attack Scenarios ---
+        
+        scenarios = [
+            {
+                "phase": "Reconnaissance",
+                "alerts": [
+                    ("network", "medium", "Port Scan Detected", "Multiple connection attempts on closed ports from 192.168.1.50"),
+                    ("network", "low", "Unusual Outbound Traffic", "Connection to unknown external IP 45.33.22.11")
+                ],
+                "ai_signal": ("network", "Port Scanning Pattern", "medium", "Rapid sequence of SYN packets detected")
+            },
+            {
+                "phase": "Initial Access",
+                "alerts": [
+                    ("auth", "high", "Failed Login Attempt", "Multiple failed RDP login attempts from 10.0.0.5"),
+                    ("auth", "high", "Failed Login Attempt", "Failed SSH login for user 'admin'"),
+                    ("auth", "critical", "Brute Force Detected", "50+ failed login attempts in 1 minute")
+                ],
+                "ai_signal": ("identity", "Brute Force Anomaly", "high", "High velocity authentication failures detected")
+            },
+            {
+                "phase": "Execution",
+                "alerts": [
+                    ("process", "critical", "Malware Detected", "Windows Defender blocked 'trojan_win32.exe'"),
+                    ("process", "high", "Suspicious PowerShell", "PowerShell executed with -EncodedCommand parameter")
+                ],
+                "ai_signal": ("process", "Malicious Script Execution", "critical", "Obfuscated PowerShell command identified")
+            },
+            {
+                "phase": "Persistence",
+                "alerts": [
+                    ("system", "medium", "New Service Installed", "Service 'UpdaterService_v2' installed from temp directory"),
+                    ("system", "high", "Registry Modification", "Run key modified for persistence: HKCU\\...\\Run")
+                ],
+                "ai_signal": ("host", "Persistence Mechanism", "high", "Unusual startup item added to registry")
+            },
+            {
+                "phase": "Exfiltration",
+                "alerts": [
+                    ("network", "high", "Data Exfiltration Suspected", "Large upload (500MB) to unknown cloud storage"),
+                    ("network", "critical", "C2 Communication", "Beaconing traffic detected to known C2 IP")
+                ],
+                "ai_signal": ("network", "Data Exfiltration", "critical", "Anomalous outbound data transfer volume")
+            }
+        ]
+
+        # Inject Data
+        for i, scenario in enumerate(scenarios):
+            # Time offset: spread over the last hour
+            time_offset = timedelta(minutes=10 * (len(scenarios) - i)) 
+            event_time = now - time_offset
             
-        print(f"Using Organization: {org.name} (Token: {org.agent_token})")
-        return org.agent_token
+            print(f"Simulating Phase: {scenario['phase']}...")
+            
+            # Create Alerts
+            for category, severity, title, detail in scenario['alerts']:
+                alert = Alert(
+                    organization_id=org_id,
+                    device_id=device.id,
+                    title=title,
+                    message=detail,
+                    category=category,
+                    severity=severity,
+                    created_at=event_time + timedelta(seconds=random.randint(0, 30))
+                )
+                db.session.add(alert)
+            
+            # Create AI Signal
+            if "ai_signal" in scenario:
+                cat, rule, severity, detail = scenario['ai_signal']
+                
+                # Generate a mitigation strategy based on the rule
+                mitigation = "Investigate immediately."
+                if "Port" in rule: mitigation = "Block source IP at firewall and review open ports."
+                elif "Brute" in rule: mitigation = "Lock user account and enforce MFA."
+                elif "Malicious" in rule: mitigation = "Isolate device and run full AV scan."
+                elif "Persistence" in rule: mitigation = "Remove registry key and check for scheduled tasks."
+                elif "Exfiltration" in rule: mitigation = "Block destination IP and revoke user credentials."
 
-def send_event(token, payload):
-    """Send a single event to the API."""
-    payload["org_token"] = token
-    try:
-        resp = requests.post(API_ENDPOINT, json=payload, timeout=5)
-        if resp.status_code in (200, 201):
-            data = resp.json()
-            print(f"[OK] Event sent. AI Match: {data.get('ai_match')} | Severity: {data.get('severity')}")
-            return True
-        else:
-            print(f"[FAIL] {resp.status_code} - {resp.text}")
-            return False
-    except Exception as e:
-        print(f"[ERROR] Connection failed: {e}")
-        return False
+                signal = AISignal(
+                    organization_id=org_id,
+                    device_id=device.id,
+                    category=cat,
+                    rule_name=rule,
+                    severity=severity,
+                    detail=detail,
+                    risk_score=random.randint(70, 99),
+                    mitigation=mitigation,
+                    ts=event_time
+                )
+                db.session.add(signal)
 
-def simulate_brute_force(token):
-    print("\n--- Simulating Auth Brute Force ---")
-    mac = "00:11:22:33:44:55"
-    hostname = "victim-pc-01"
-    
-    # Send 6 failed login attempts
-    for i in range(6):
-        payload = {
-            "type": "auth",
-            "action": "failed_login",
-            "username": "admin",
-            "source_ip": "192.168.1.100",
-            "hostname": hostname,
-            "mac": mac,
-            "ip": "10.0.0.5",
-            "description": "Failed password for user admin"
-        }
-        send_event(token, payload)
-        time.sleep(0.5)
+            # Create Event (for Live Events page)
+            # Map alert severity/category to Event fields
+            event_type = "alert"
+            if "Malware" in title or "C2" in title: event_type = "threat"
+            
+            event = Event(
+                organization_id=org_id,
+                device_id=device.id,
+                event_type=event_type,
+                category=category,
+                severity=severity,
+                message=detail,
+                mitigation=mitigation if "ai_signal" in scenario else None,
+                ts=event_time
+            )
+            db.session.add(event)
 
-def simulate_process_network_link(token):
-    print("\n--- Simulating Process + Network Link ---")
-    mac = "AA:BB:CC:DD:EE:FF"
-    hostname = "compromised-server"
-    
-    # 1. Suspicious Process (Mimikatz)
-    proc_payload = {
-        "type": "process",
-        "process_name": "mimikatz.exe",
-        "cmdline": "mimikatz.exe privilege::debug",
-        "path": "C:\\Temp\\mimikatz.exe",
-        "hostname": hostname,
-        "mac": mac,
-        "ip": "10.0.0.10"
-    }
-    send_event(token, proc_payload)
-    time.sleep(1)
-    
-    # 2. Suspicious Network Connection (C2)
-    net_payload = {
-        "type": "network",
-        "dest_ip": "185.100.1.1",
-        "dest_port": 4444,
-        "domain": "evil-c2.onion",
-        "protocol": "tcp",
-        "hostname": hostname,
-        "mac": mac,
-        "ip": "10.0.0.10"
-    }
-    send_event(token, net_payload)
-
-def simulate_ransomware(token):
-    print("\n--- Simulating Ransomware Behavior ---")
-    mac = "11:22:33:44:55:66"
-    hostname = "fileserver-01"
-    
-    # 1. File with suspicious extension
-    file_payload = {
-        "type": "file",
-        "file_name": "important_doc.docx.enc",
-        "path": "C:\\Users\\Admin\\Documents\\important_doc.docx.enc",
-        "file_hash": "a" * 64, # Dummy hash
-        "hostname": hostname,
-        "mac": mac,
-        "ip": "10.0.0.20"
-    }
-    send_event(token, file_payload)
-    
-    # 2. Rapid file modifications (20 events)
-    print("Sending rapid file modification events...")
-    for i in range(25):
-        mass_mod_payload = {
-            "type": "file",
-            "file_name": f"data_{i}.locked",
-            "path": f"D:\\Data\\data_{i}.locked",
-            "hostname": hostname,
-            "mac": mac,
-            "ip": "10.0.0.20",
-            "behavior_type": "rapid_file_mod",
-            "description": "File encrypted"
-        }
-        send_event(token, mass_mod_payload)
-        # No sleep to simulate rapid activity
-
-def simulate_lateral_movement(token):
-    print("\n--- Simulating Lateral Movement ---")
-    attacker_ip = "192.168.1.200"
-    
-    # Device 1
-    payload1 = {
-        "type": "auth",
-        "action": "failed_login",
-        "username": "admin",
-        "source_ip": attacker_ip,
-        "hostname": "workstation-01",
-        "mac": "AA:00:00:00:00:01",
-        "ip": "10.0.0.101"
-    }
-    send_event(token, payload1)
-    
-    # Device 2
-    payload2 = {
-        "type": "auth",
-        "action": "failed_login",
-        "username": "admin",
-        "source_ip": attacker_ip,
-        "hostname": "workstation-02",
-        "mac": "BB:00:00:00:00:02",
-        "ip": "10.0.0.102"
-    }
-    send_event(token, payload2)
-    
-    # Device 3
-    payload3 = {
-        "type": "auth",
-        "action": "failed_login",
-        "username": "admin",
-        "source_ip": attacker_ip,
-        "hostname": "server-db",
-        "mac": "CC:00:00:00:00:03",
-        "ip": "10.0.0.103"
-    }
-    send_event(token, payload3)
+        db.session.commit()
+        print("--- Simulation Complete ---")
+        print("Check the Dashboard for new alerts and AI insights.")
 
 if __name__ == "__main__":
-    print("Initializing Simulation...")
-    token = get_org_token()
-    
-    simulate_brute_force(token)
-    time.sleep(2)
-    
-    simulate_process_network_link(token)
-    time.sleep(2)
-    
-    simulate_ransomware(token)
-    time.sleep(2)
-    
-    simulate_lateral_movement(token)
-    
-    print("\nSimulation Complete. Check the Dashboard for alerts.")
+    simulate_attacks()

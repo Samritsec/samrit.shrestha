@@ -155,7 +155,7 @@ def _build_windows_ps(org: Organization, base: str) -> str:
         }}
 
         Write-Host "⬇️  Installing dependencies..."
-        & "$root\\venv\\Scripts\\pip" install --upgrade pip requests psutil
+        & "$root\\venv\\Scripts\\python.exe" -m pip install --upgrade pip requests psutil
 
         Write-Host "⬇️  Fetching agent client..."
         $client = "{base}/install/agent/client/{org.agent_token}"
@@ -168,10 +168,20 @@ def _build_windows_ps(org: Organization, base: str) -> str:
         $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
         
         Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue
-        Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Principal $principal -Force | Out-Null
-
-        Write-Host "✅ Installed successfully. Starting agent..."
-        Start-ScheduledTask -TaskName $taskName
+        
+        try {{
+            Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Principal $principal -Force | Out-Null
+            Write-Host "✅ Installed successfully. Agent will run on startup."
+            Start-ScheduledTask -TaskName $taskName
+        }} catch {{
+            Write-Host "⚠️  Warning: Could not register Scheduled Task (Requires Admin)." -ForegroundColor Yellow
+            Write-Host "   The agent will run now, but will not start automatically on reboot."
+            Write-Host "   To fix: Run PowerShell as Administrator and reinstall."
+            
+            # Fallback: Run directly
+            Write-Host "🚀 Starting agent manually..."
+            & "$root\\venv\\Scripts\\python.exe" "$root\\agent_client.py"
+        }}
     """)
 
 

@@ -32,7 +32,7 @@ Write-Host "Installing dependencies..."
 & "$root\venv\Scripts\pip" install --upgrade pip requests psutil
 
 Write-Host "Fetching agent client..."
-$client = "http://127.0.0.1:5002/install/agent/client/$OrgToken"
+$client = "http://127.0.0.1:5003/install/agent/client/$OrgToken"
 Invoke-WebRequest -Uri $client -OutFile "$root\agent_client.py"
 
 Write-Host "Registering scheduled task (SYSTEM)..."

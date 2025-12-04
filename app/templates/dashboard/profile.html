@@ -7,25 +7,27 @@
   <!-- Header -->
   <div class="d-flex align-items-center justify-content-between mb-3">
     <div>
-      <h4 class="mb-0 fw-semibold text-white">Profile Overview</h4>
-      <p><span class="text-white-50 small">Username:</span> <strong>{{ user.username }}</strong></p>
-      <p><span class="text-white-50 small">Email:</span> {{ user.email }}</p>
+      <h4 class="mb-0 fw-bold text-white">Profile Overview</h4>
+      <p><span class="text-light small fw-bold">Username:</span> <strong class="text-white">{{ user.username }}</strong>
+      </p>
+      <p><span class="text-light small fw-bold">Email:</span> <span class="text-white">{{ user.email }}</span></p>
       <p>
-        <span class="text-white-50 small">Role:</span>
+        <span class="text-light small fw-bold">Role:</span>
         <span class="badge bg-info text-dark text-uppercase">{{ user.role }}</span>
       </p>
     </div>
 
     <div class="col-md-6">
       {% if org %}
-      <p><span class="text-white-50 small">Organization:</span> <strong>{{ org.name }}</strong></p>
+      <p><span class="text-light small fw-bold">Organization:</span> <strong class="text-white">{{ org.name }}</strong>
+      </p>
       <p>
-        <span class="text-white-50 small">Sector:</span>
+        <span class="text-light small fw-bold">Sector:</span>
         <span class="badge bg-accent text-uppercase">{{ org.sector }}</span>
       </p>
       {% if sub %}
       <p>
-        <span class="text-white-50 small">Current Plan:</span>
+        <span class="text-light small fw-bold">Current Plan:</span>
         <span class="badge bg-info text-dark text-uppercase">{{ sub.plan }}</span>
         {% if sub.sos_enabled %}
         <span class="badge bg-warning text-dark ms-1">
@@ -52,7 +54,7 @@
   <h6 class="text-warning">
     <i class="fa-solid fa-bell me-2"></i>SOS Alert Contact
   </h6>
-  <p class="text-white-50 small mb-3">
+  <p class="text-light small mb-3 fw-bold">
     These contact details are <strong>actively used for SOS alerts</strong> and urgent notifications.
     Make sure they are accurate and monitored.
   </p>
@@ -63,14 +65,14 @@
         <label for="alert_email" class="form-label text-white">Alert Email</label>
         <input type="email" id="alert_email" name="alert_email" value="{{ org.alert_email or '' }}"
           class="form-control bg-dark text-white" placeholder="you@example.com">
-        <small class="text-white-50">All SOS email alerts will be sent to this address.</small>
+        <small class="text-light fw-bold">All SOS email alerts will be sent to this address.</small>
       </div>
 
       <div class="col-md-6">
         <label for="alert_phone" class="form-label text-white">Alert Phone (for SMS)</label>
         <input type="text" id="alert_phone" name="alert_phone" value="{{ org.alert_phone or '' }}"
           class="form-control bg-dark text-white" placeholder="+1 416-555-1234">
-        <small class="text-white-50">Used for critical SMS alerts when available.</small>
+        <small class="text-light fw-bold">Used for critical SMS alerts when available.</small>
       </div>
     </div>
 
@@ -110,19 +112,19 @@
   <div class="card-header d-flex align-items-center justify-content-between">
     <div>
       <i class="fa-solid fa-shield-halved me-2 text-accent"></i>
-      <strong>{{ sector_info.name }}</strong>
-      <small class="d-block text-white-50">Sector Security & Compliance Overview</small>
+      <strong class="text-white">{{ sector_info.name }}</strong>
+      <small class="d-block text-light fw-bold">Sector Security & Compliance Overview</small>
     </div>
   </div>
 
   <div class="card-body">
-    <p class="text-white-50 small mb-3">{{ sector_info.description }}</p>
+    <p class="text-light small mb-3 fw-bold">{{ sector_info.description }}</p>
 
     <div class="row">
       <!-- Compliance Chart -->
       <div class="col-md-5 text-center">
         <canvas id="complianceChart" width="200" height="200"></canvas>
-        <small class="text-white-50 d-block mt-2">Compliance Coverage</small>
+        <small class="text-light d-block mt-2 fw-bold">Compliance Coverage</small>
 
         <!-- Animated Audit Progress -->
         <div class="audit-progress mt-4">
@@ -149,7 +151,7 @@
               aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100">
             </div>
           </div>
-          <small class="text-white-50 d-block mt-2">
+          <small class="text-light d-block mt-2 fw-bold">
             Next Audit Due:
             <strong>{{ (now_utc + timedelta(days=90)).strftime('%B %d, %Y') }}</strong> · 90-Day Cycle
           </small>
@@ -158,7 +160,7 @@
 
       <!-- Compliance Details -->
       <div class="col-md-7">
-        <h6 class="fw-semibold text-accent mb-2">Compliance Frameworks</h6>
+        <h6 class="fw-bold text-accent mb-2">Compliance Frameworks</h6>
         <div class="d-flex flex-wrap gap-2 mb-3">
           {% for item in sector_info.compliance %}
           <span class="badge bg-dark border border-accent small px-3 py-2">
@@ -168,8 +170,8 @@
         </div>
 
         <!-- Compliance Breakdown Table -->
-        <h6 class="fw-semibold text-accent mb-2">Compliance Breakdown</h6>
-        <table class="table table-sm table-borderless align-middle text-white-50 small mb-3">
+        <h6 class="fw-bold text-accent mb-2">Compliance Breakdown</h6>
+        <table class="table table-sm table-borderless align-middle text-light small mb-3 fw-bold">
           <thead>
             <tr>
               <th class="text-start">Framework</th>
@@ -195,10 +197,10 @@
         </table>
 
         <!-- Key Priorities -->
-        <h6 class="fw-semibold text-accent mb-2">Key Security Priorities</h6>
+        <h6 class="fw-bold text-accent mb-2">Key Security Priorities</h6>
         <ul class="ps-3 mb-0">
           {% for item in sector_info.priorities %}
-          <li class="small text-white-50">
+          <li class="small text-light fw-bold">
             <i class="fa-solid fa-circle-check me-2 text-success"></i>{{ item }}
           </li>
           {% endfor %}
@@ -208,7 +210,7 @@
 
     <hr class="border-secondary my-4">
 
-    <div class="row text-white-50 small">
+    <div class="row text-light small fw-bold">
       <div class="col-md-6">
         <strong class="text-accent">Last Compliance Audit:</strong>
         {{ now_utc.strftime('%B %d, %Y') }}
@@ -227,7 +229,7 @@
 
 <!-- Footer -->
 <div class="text-center mt-3">
-  <small class="text-white-50">
+  <small class="text-light fw-bold">
     TenshiGuard™️ helps ensure your organization meets global cybersecurity compliance and monitoring standards.
   </small>
 </div>

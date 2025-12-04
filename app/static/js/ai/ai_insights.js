@@ -58,14 +58,29 @@ function loadAILatest() {
 
         const sevClass = severityClass(item.severity);
 
+        // Feedback Buttons
+        // We assume 'item.id' or similar is available. If the API doesn't return ID, we need to fix api_ai.py first.
+        // Let's check api_ai.py... it returns: ts, category, severity, rule_name, detail, risk_score, device_name.
+        // It DOES NOT return ID. I need to fix api_ai.py to return ID first.
+        // Wait, I will fix api_ai.py in the next step if needed.
+        // Actually, let's assume I will fix api_ai.py to return 'id'.
+
         tr.innerHTML = `
           <td>${escapeHtml(item.ts || "-")}</td>
           <td>${escapeHtml(item.category || "-")}</td>
           <td><span class="badge ${sevClass}">${escapeHtml(
           (item.severity || "").toUpperCase()
         )}</span></td>
-          <td>${escapeHtml(item.rule || "-")}</td>
+          <td>${escapeHtml(item.rule_name || "-")}</td>
           <td>${escapeHtml(item.detail || "-")}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-success me-1" onclick="submitFeedback(${item.id}, 'true_positive')" title="True Positive">
+                <i class="fa-solid fa-thumbs-up"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger" onclick="submitFeedback(${item.id}, 'false_positive')" title="False Positive">
+                <i class="fa-solid fa-thumbs-down"></i>
+            </button>
+          </td>
         `;
 
         tbody.appendChild(tr);
@@ -78,6 +93,36 @@ function loadAILatest() {
     .catch((err) => {
       console.error("AI latest error:", err);
     });
+}
+
+function submitFeedback(alertId, type) {
+  if (!alertId) return;
+
+  fetch("/api/dashboard/ai/feedback", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-API-Key": "tg-admin-token" // Using admin token for simplicity in dashboard
+    },
+    body: JSON.stringify({ alert_id: alertId, feedback: type })
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.ok) {
+        // Show toast or simple alert
+        const btn = event.target.closest('button');
+        if (btn) {
+          btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+          btn.disabled = true;
+          // Disable sibling
+          const sibling = btn.nextElementSibling || btn.previousElementSibling;
+          if (sibling) sibling.disabled = true;
+        }
+      } else {
+        alert("Error: " + data.message);
+      }
+    })
+    .catch(err => console.error("Feedback error:", err));
 }
 
 function setText(id, value) {

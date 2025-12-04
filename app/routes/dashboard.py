@@ -247,7 +247,7 @@ def ai_insights_dashboard():
             })
 
     ctx.update(dict(alerts=alerts, metrics=metrics, risky_devices=risky_devices))
-    return render_template("dashboard/ai_insights.html", **ctx)
+    return render_template("dashboard/ai/ai_insights.html", **ctx)
 
 
 @dashboard_bp.route("/dashboard/ai/files")
@@ -525,6 +525,11 @@ def admin_dashboard():
         ]
     }
 
+    # --------------------------------------------------------
+    # 🧪 MOCK DATA INJECTION REMOVED
+    # Now relying purely on live data from the database.
+    # --------------------------------------------------------
+
     ctx.update(dict(
         devices=devices,
         events=alerts,
@@ -647,7 +652,14 @@ def devices_page():
             stale = True
         d.status = "offline" if stale else "online"
 
-    return render_template("dashboard/devices.html", devices=devices, now=now, timeout_seconds=TIMEOUT_SECONDS)
+    stats = {
+        "total": len(devices),
+        "online": sum(1 for d in devices if d.status == "online"),
+        "high_risk": sum(1 for d in devices if d.risk_level == "high"),
+        "critical": sum(1 for d in devices if d.risk_level == "critical")
+    }
+
+    return render_template("dashboard/devices.html", devices=devices, stats=stats, now=now, timeout_seconds=TIMEOUT_SECONDS)
 
 # ============================================================
 # ⚙️ SETUP AGENT GUIDE

@@ -86,64 +86,49 @@
   <div id="simulationBanner">
     ⚙️ Simulation Mode Active — All SOS alerts, emails, and SMS notifications are simulated for testing only.
     <button class="close-banner" title="Hide Banner">&times;</button>
-  </div>
 
-  <!-- 🔹 Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
-    <div class="container-fluid">
-      <!-- ✅ Logo -->
-      <a class="navbar-brand d-flex align-items-center" href="{{ url_for('dashboard.index') }}">
-        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="TenshiGuard Logo">
-        <span>TenshiGuard</span>
-      </a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
 
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+        {% if current_user.is_authenticated %}
+        <!-- Dashboard -->
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('dashboard.index') }}">Dashboard</a>
+        </li>
 
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
+        <!-- 🔸 Sector Dashboards Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="sectorDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            Sector Dashboards
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="sectorDropdown">
+            <li><a class="dropdown-item" href="{{ url_for('sector.academic') }}">Academic</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('sector.healthcare') }}">Healthcare</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('sector.hospitality') }}">Hospitality</a></li>
+          </ul>
+        </li>
 
-          {% if current_user.is_authenticated %}
-          <!-- Dashboard -->
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('dashboard.index') }}">Dashboard</a>
-          </li>
+        <!-- Profile Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            <i class="fa-solid fa-user"></i> {{ current_user.username }}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Logout</a></li>
+          </ul>
+        </li>
 
-          <!-- 🔸 Sector Dashboards Dropdown -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="sectorDropdown" role="button" data-bs-toggle="dropdown"
-              aria-expanded="false">
-              Sector Dashboards
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="sectorDropdown">
-              <li><a class="dropdown-item" href="{{ url_for('sector.academic') }}">Academic</a></li>
-              <li><a class="dropdown-item" href="{{ url_for('sector.healthcare') }}">Healthcare</a></li>
-              <li><a class="dropdown-item" href="{{ url_for('sector.hospitality') }}">Hospitality</a></li>
-            </ul>
-          </li>
+        {% else %}
+        <!-- Login / Register -->
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Login</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('register_flow.org') }}">Register</a></li>
+        {% endif %}
 
-          <!-- Profile Dropdown -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown"
-              aria-expanded="false">
-              <i class="fa-solid fa-user"></i> {{ current_user.username }}
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-              <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Logout</a></li>
-            </ul>
-          </li>
-
-          {% else %}
-          <!-- Login / Register -->
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Login</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('register_flow.org') }}">Register</a></li>
-          {% endif %}
-
-        </ul>
-      </div>
+      </ul>
     </div>
+  </div>
   </nav>
 
   <!-- 🔹 Flash Messages -->

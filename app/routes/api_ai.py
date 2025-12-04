@@ -30,6 +30,7 @@ def api_ai_latest(org):
         dev_name = s.device.device_name if s.device else "Unknown Device"
         out.append(
             {
+                "id": s.id,
                 "ts": s.ts.strftime("%Y-%m-%d %H:%M:%S"),
                 "category": s.category,
                 "severity": s.severity,
@@ -186,3 +187,26 @@ def api_ai_ask():
         
     response = service.ask_ai(prompt, context)
     return jsonify({"ok": True, "response": response}), 200
+
+
+# 6. Submit Feedback
+@api_ai_bp.post("/feedback")
+@require_api_key
+def api_ai_feedback(org):
+    from flask import request
+    from app.ai.learning_engine import LearningEngine
+
+    data = request.get_json() or {}
+    alert_id = data.get("alert_id")
+    feedback = data.get("feedback")  # true_positive | false_positive
+
+    if not alert_id or not feedback:
+        return jsonify({"ok": False, "message": "Missing alert_id or feedback"}), 400
+
+    engine = LearningEngine()
+    success, msg = engine.submit_feedback(alert_id, feedback)
+
+    if success:
+        return jsonify({"ok": True, "message": msg}), 200
+    else:
+        return jsonify({"ok": False, "message": msg}), 404
