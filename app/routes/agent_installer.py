@@ -190,12 +190,18 @@ def _build_windows_ps(org: Organization, base: str) -> str:
         $trigger  = New-ScheduledTaskTrigger -AtStartup
         $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
         
+        # Create settings to allow running on battery and immediately
+        $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -DontStopOnIdleEnd -ExecutionTimeLimit (New-TimeSpan -Days 0)
+
         Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue
         
         try {{
-            Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Principal $principal -Force | Out-Null
+            Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Force | Out-Null
             Write-Host "✅ Installed successfully. Agent will run on startup."
+            
+            # Force start now
             Start-ScheduledTask -TaskName $taskName
+            Write-Host "   Agent started."
         }} catch {{
             Write-Host "⚠️  Warning: Could not register Scheduled Task (Requires Admin)." -ForegroundColor Yellow
             Write-Host "   The agent will run now, but will not start automatically on reboot."
@@ -670,6 +676,6 @@ def uninstall_sh():
         sudo rm -f /etc/systemd/system/tenshiguard-agent.service
         sudo systemctl daemon-reload
         sudo rm -rf /opt/tenshiguard
-        echo "✅ Tenshiguard Agent fully removed."
+        echo "✅ TenshiGuard Agent fully removed."
     """)
     return _sh(sh)

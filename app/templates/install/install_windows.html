@@ -115,6 +115,8 @@
     <div class="troubleshoot-panel">
       <h6><i class="fa-solid fa-triangle-exclamation me-2"></i>Troubleshooting</h6>
       <ul>
+        <li><strong>"State: Queued"</strong>: This is normal. It usually starts within a minute. If stuck, run:
+          <code>Start-ScheduledTask -TaskName "TenshiGuardAgent"</code></li>
         <li><strong>"Access Denied"</strong>: Ensure you ran PowerShell as Administrator.</li>
         <li><strong>"Script is not digitally signed"</strong>: Run <code>Set-ExecutionPolicy RemoteSigned</code> and
           try again.</li>
