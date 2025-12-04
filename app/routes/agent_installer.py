@@ -586,7 +586,7 @@ def serve_agent_client(org_token: str):
                     # *[System[(EventID=4624 or EventID=4625 or EventID=4647) and TimeCreated[timediff(@SystemTime) <= 3000]]]
                     cmd = [
                         "powershell", "-Command",
-                        "Get-WinEvent -LogName Security -FilterXPath \"*[System[(EventID=4624 or EventID=4625 or EventID=4647) and TimeCreated[timediff(@SystemTime) <= 3000]]]\" -ErrorAction SilentlyContinue | Select-Object Id, Message, TimeCreated | ConvertTo-Json"
+                        'Get-WinEvent -LogName Security -FilterXPath "*[System[(EventID=4624 or EventID=4625 or EventID=4647) and TimeCreated[timediff(@SystemTime) <= 3000]]]" -ErrorAction SilentlyContinue | Select-Object Id, Message, TimeCreated | ConvertTo-Json'
                     ]
                     
                     try:
