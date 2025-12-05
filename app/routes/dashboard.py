@@ -666,6 +666,35 @@ def devices_page():
 
     return render_template("dashboard/devices.html", devices=devices, stats=stats, now=now, timeout_seconds=TIMEOUT_SECONDS)
 
+
+# ============================================================
+# 🗑️ DELETE DEVICE
+# ============================================================
+@dashboard_bp.route("/dashboard/devices/delete/<int:device_id>", methods=["POST"])
+@role_required("admin")
+def delete_device(device_id):
+    from app.models import Device
+    org = getattr(current_user, "organization", None)
+    if not org:
+        return redirect(url_for("dashboard.overview"))
+
+    device = Device.query.get_or_404(device_id)
+
+    # Security check: Ensure device belongs to this org
+    if device.organization_id != org.id:
+        flash("Unauthorized action.", "danger")
+        return redirect(url_for("dashboard.devices_page"))
+
+    try:
+        db.session.delete(device)
+        db.session.commit()
+        flash(f"Device '{device.device_name}' deleted successfully.", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error deleting device: {str(e)}", "danger")
+
+    return redirect(url_for("dashboard.devices_page"))
+
 # ============================================================
 # ⚙️ SETUP AGENT GUIDE
 # ============================================================
