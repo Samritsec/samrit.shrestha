@@ -8,6 +8,28 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/portfolio.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Extra styles for detailed cards */
+        .tech-detail {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: 0.5rem;
+        }
+
+        .project-card,
+        .skill-item {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .section-desc {
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            font-size: 1.1rem;
+            color: #cbd5e1;
+        }
+    </style>
 </head>
 
 <body>
@@ -17,8 +39,9 @@
                 <a href="#" class="logo">TenshiGuard<span style="color: var(--accent-color);">.Dev</span></a>
                 <div class="nav-links">
                     <a href="#about">About</a>
-                    <a href="#modules">System Modules</a>
+                    <a href="#modules">Architecture</a>
                     <a href="#tech">Tech Stack</a>
+                    <a href="#ai">AI Engine</a>
                     <a href="{{ url_for('dashboard.documentation') }}" class="special-link">Documentation (PDF)</a>
                 </div>
             </nav>
@@ -27,109 +50,163 @@
 
     <section class="hero" id="about">
         <div class="container">
-            <section id="modules" class="projects">
-                <div class="container">
-                    <h2 class="section-title">System Architecture & Modules</h2>
-                    <p class="section-desc">TenshiGuard is not just a tool; it's an ecosystem. Here are the core
-                        components I
-                        built:</p>
+            <div class="hero-content">
+                <h1>Next-Gen Endpoint Security</h1>
+                <p class="subtitle">Architected and built <strong>TenshiGuard AI</strong>, a comprehensive cybersecurity
+                    platform combining real-time telemetry, AI-driven threat detection, and cloud-native orchestration.
+                </p>
+                <div class="hero-btns">
+                    <a href="#modules" class="btn">Explore Architecture</a>
+                    <a href="https://github.com/TenshiGuard/TenshiGuard-Live" target="_blank" class="btn btn-outline"><i
+                            class="fa-brands fa-github"></i> View Source</a>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline">Live Demo</a>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                    <div class="project-grid">
-                        <!-- Module 1: The Agent -->
-                        <div class="project-card">
-                            <div class="card-icon"><i class="fa-brands fa-windows"></i></div>
-                            <h3>Intelligent Endpoint Agent</h3>
-                            <p>A lightweight, Python/PowerShell-based agent that runs on client devices. It captures
-                                system
-                                telemetry (CPU/RAM), monitors file system events, and enforces security policies in
-                                real-time.
-                            </p>
-                            <div class="tags">
-                                <span class="tag">Python</span>
-                                <span class="tag">PowerShell</span>
-                                <span class="tag">System API</span>
-                            </div>
-                        </div>
+    <section id="modules" class="projects">
+        <div class="container">
+            <h2 class="section-title">System Architecture & Modules</h2>
+            <p class="section-desc">TenshiGuard is not just a tool; it's an ecosystem designed for scalability,
+                performance, and autonomy. Here are the core components I built:</p>
 
-                        <!-- Module 2: The Core -->
-                        <div class="project-card">
-                            <div class="card-icon"><i class="fa-solid fa-brain"></i></div>
-                            <h3>AI Correlation Engine</h3>
-                            <p>The brain of the operation. It ingests thousands of events, correlates disparate signals
-                                (e.g.,
-                                failed logins + file download), and uses Machine Learning to detect zero-day anomalies.
-                            </p>
-                            <div class="tags">
-                                <span class="tag">Scikit-Learn</span>
-                                <span class="tag">Heuristics</span>
-                                <span class="tag">Data Pipelines</span>
-                            </div>
-                        </div>
-
-                        <!-- Module 3: The Dashboard -->
-                        <div class="project-card">
-                            <div class="card-icon"><i class="fa-solid fa-chart-line"></i></div>
-                            <h3>Command Center Dashboard</h3>
-                            <p>A responsive, real-time admin interface built with Flask and Vanilla JS. Features live
-                                charts,
-                                remote device management, and an interactive threat map.</p>
-                            <div class="tags">
-                                <span class="tag">Flask</span>
-                                <span class="tag">Chart.js</span>
-                                <span class="tag">Bootstrap 5</span>
-                            </div>
-                        </div>
+            <div class="project-grid">
+                <!-- Module 1: The Agent -->
+                <div class="project-card">
+                    <div class="card-icon"><i class="fa-brands fa-windows"></i></div>
+                    <h3>Intelligent Endpoint Agent</h3>
+                    <p>A lightweight, Python/PowerShell-based agent that runs on client devices.</p>
+                    <p class="tech-detail"><strong>Purpose:</strong> To act as the eyes and ears on the ground,
+                        capturing telemetry that network firewalls miss.</p>
+                    <p class="tech-detail"><strong>How it works:</strong> It uses `threading` for concurrent monitoring
+                        of File Integrity (Watchdog), Process Creation (WMI), and Network Connections (Psutil), sending
+                        data every 15s.</p>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">PowerShell</span>
+                        <span class="tag">System API</span>
                     </div>
                 </div>
-            </section>
 
-            <section id="tech" class="skills">
-                <div class="container">
-                    <h2 class="section-title">Technologies Used</h2>
-                    <div class="skills-grid">
-                        <div class="skill-item">
-                            <i class="fa-brands fa-python"></i>
-                            <h3>Python 3.9+</h3>
-                            <p>Backend & Agent Logic</p>
-                        </div>
-                        <div class="skill-item">
-                            <i class="fa-solid fa-database"></i>
-                            <h3>SQLAlchemy</h3>
-                            <p>ORM & Database Abstraction</p>
-                        </div>
-                        <div class="skill-item">
-                            <i class="fa-solid fa-server"></i>
-                            <h3>Flask</h3>
-                            <p>REST API & Web Server</p>
-                        </div>
-                        <div class="skill-item">
-                            <i class="fa-solid fa-shield-halved"></i>
-                            <h3>Cybersecurity</h3>
-                            <p>Threat Analysis & Mitigation</p>
-                        </div>
+                <!-- Module 2: The Core -->
+                <div class="project-card">
+                    <div class="card-icon"><i class="fa-solid fa-brain"></i></div>
+                    <h3>AI Correlation Engine</h3>
+                    <p>The central brain that processes and correlates disparate events.</p>
+                    <p class="tech-detail"><strong>Purpose:</strong> To reduce alert fatigue by filtering noise and
+                        identifying complex attack patterns.</p>
+                    <p class="tech-detail"><strong>How it works:</strong> Uses heuristic chains (e.g., 5 failures + 1
+                        success = Brute Force) and Scikit-learn for anomaly detection, assigning a dynamic risk score to
+                        each device.</p>
+                    <div class="tags">
+                        <span class="tag">Scikit-Learn</span>
+                        <span class="tag">Heuristics</span>
+                        <span class="tag">Data Pipelines</span>
                     </div>
                 </div>
-            </section>
 
-            <section id="contact" class="contact">
-                <div class="container">
-                    <h2 class="section-title">Ready to Secure the Future?</h2>
-                    <p>This project demonstrates my ability to build complex, full-stack security solutions from
-                        scratch.</p>
-                    <div class="contact-links">
-                        <a href="https://github.com/TenshiGuard/TenshiGuard-Live" target="_blank" class="contact-link"
-                            title="GitHub"><i class="fa-brands fa-github"></i></a>
-                        <a href="mailto:contact@tenshiguard.ai" class="contact-link" title="Email"><i
-                                class="fa-solid fa-envelope"></i></a>
+                <!-- Module 3: The Dashboard -->
+                <div class="project-card">
+                    <div class="card-icon"><i class="fa-solid fa-chart-line"></i></div>
+                    <h3>Command Center Dashboard</h3>
+                    <p>A responsive, real-time admin interface for visibility and control.</p>
+                    <p class="tech-detail"><strong>Purpose:</strong> To provide a "Single Pane of Glass" for security
+                        teams.</p>
+                    <p class="tech-detail"><strong>How it works:</strong> Built with Flask and Vanilla JS (no heavy
+                        frameworks) for max speed. Features live WebSocket-like polling and interactive Chart.js
+                        visualizations.</p>
+                    <div class="tags">
+                        <span class="tag">Flask</span>
+                        <span class="tag">Chart.js</span>
+                        <span class="tag">Bootstrap 5</span>
                     </div>
                 </div>
-            </section>
+            </div>
+        </div>
+    </section>
 
-            <footer>
-                <div class="container">
-                    <p>&copy; 2025 TenshiGuard AI. Built with ❤️ and ☕.</p>
+    <section id="tech" class="skills">
+        <div class="container">
+            <h2 class="section-title">Technology Stack & Platforms</h2>
+            <p class="section-desc">Selected for performance, reliability, and modernize serverless capabilities.</p>
+            <div class="skills-grid">
+                <div class="skill-item">
+                    <i class="fa-brands fa-python"></i>
+                    <h3>Python 3.9+ (Flask)</h3>
+                    <p><strong>Why:</strong> Unmatched libraries for Cybersec (Scapy, PyWin32) and AI (Scikit). Flask
+                        allows rapid API development.</p>
                 </div>
-            </footer>
+                <div class="skill-item">
+                    <i class="fa-solid fa-database"></i>
+                    <h3>PostgreSQL (Neon)</h3>
+                    <p><strong>Why:</strong> Robust relational data structure with JSONB support for unstructured logs.
+                        Neon provides serverless scaling.</p>
+                </div>
+                <div class="skill-item">
+                    <i class="fa-solid fa-cloud"></i>
+                    <h3>Vercel</h3>
+                    <p><strong>Platform:</strong> Serverless hosting for the backend.</p>
+                    <p><strong>Why:</strong> Zero maintenance, auto-scaling, and global edge network delivery.</p>
+                </div>
+                <div class="skill-item">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <h3>Cybersecurity Principles</h3>
+                    <p><strong>Concepts:</strong> implemented Least Privilege, Multi-Tenancy, and Defense in Depth.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="ai" class="projects">
+        <div class="container">
+            <h2 class="section-title">AI & The End Goal</h2>
+            <p class="section-desc">Moving from "Detection" to "Prediction" and "Self-Healing".</p>
+
+            <div class="project-grid" style="grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <div class="project-card">
+                    <div class="card-icon"><i class="fa-solid fa-robot"></i></div>
+                    <h3>How the AI Works</h3>
+                    <p>TenshiGuard uses a <strong>Hybrid Detection Model</strong>:</p>
+                    <ul style="color: #94a3b8; font-size: 0.9rem; list-style-position: inside; margin-top: 1rem;">
+                        <li><strong>Signature-Based:</strong> Instant blocks for known malware hashes (like traditional
+                            AV).</li>
+                        <li><strong>Behavioral Analysis:</strong> It watches <em>what</em> a program does, not just who
+                            it is. (e.g., "Why is Notepad connecting to the internet?").</li>
+                        <li><strong>Risk Scoring:</strong> A dynamic score (0-100) that rises with threats and decays
+                            over time, helping admins prioritize the fire.</li>
+                    </ul>
+                </div>
+                <div class="project-card">
+                    <div class="card-icon"><i class="fa-solid fa-bullseye"></i></div>
+                    <h3>The Project Goal</h3>
+                    <p>To build a <strong>Fully Autonomous Security Analyst</strong>.</p>
+                    <p class="tech-detail" style="margin-top: 1rem;">Often, human analysts are too slow to stop a
+                        ransomware encryption process (which takes milliseconds). Our goal is to create an agent smart
+                        enough to detect the anomaly and <strong>kill the process autonomously</strong> in sub-second
+                        time, alerting the human only after the threat is neutralized.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">Ready to Secure the Future?</h2>
+            <div class="contact-links">
+                <a href="https://github.com/TenshiGuard/TenshiGuard-Live" target="_blank" class="contact-link"
+                    title="GitHub"><i class="fa-brands fa-github"></i></a>
+                <a href="mailto:contact@tenshiguard.ai" class="contact-link" title="Email"><i
+                        class="fa-solid fa-envelope"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 TenshiGuard AI. Built with ❤️ and ☕.</p>
+        </div>
+    </footer>
 </body>
 
 </html>
