@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Samrit Shrestha Portfolio</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='portfolio/style.css') }}">
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -111,6 +111,28 @@
         </div>
     </section>
 
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Admin Login</h2>
+                <button class="modal-close-login"
+                    style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="username" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" class="form-input" required>
+                </div>
+                <button type="submit" class="submit-btn"><i class="fa-solid fa-lock"></i> Login</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Upload Modal -->
     <div class="modal-overlay" id="uploadModal">
         <div class="modal-content">
@@ -121,7 +143,7 @@
             <form id="projectForm">
                 <div class="form-group">
                     <label>Project Title</label>
-                    <input type="text" id="pTitle" class="form-input" required placeholder="e.g. AI Chatbot">
+                    <input type="text" id="pTitle" class="form-input" required placeholder="e.g. Network Scanner">
                 </div>
                 <div class="form-group">
                     <label>Description</label>
@@ -202,7 +224,7 @@
         </div>
     </footer>
 
-    <script src="{{ url_for('static', filename='portfolio/script.js') }}"></script>
+    <script src="script.js"></script>
 </body>
 
 </html>
