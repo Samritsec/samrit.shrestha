@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samrit Shrestha - Cybersecurity Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="#" class="logo">Samrit.Sec</a>
+                <div class="nav-links">
+                    <a href="#about">About</a>
+                    <a href="#projects">Projects</a>
+                    <a href="#skills">Skills</a>
+                    <button id="uploadBtn" class="btn-upload"><i class="fa-solid fa-cloud-arrow-up"></i> Upload
+                        Project</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>SAMRIT SHRESTHA</h1>
+            <p>Recent Cybersecurity Graduate | Security Operations | AI-Driven Security</p>
+            <div class="hero-actions">
+                <a href="#contact" class="btn">Contact Me</a>
+                <a href="https://github.com/Samritsec" class="btn" target="_blank"
+                    style="margin-left: 10px; background: transparent;"><i class="fa-brands fa-github"></i> GitHub</a>
+                <a href="https://linkedin.com/in/samrit-shrestha" class="btn" target="_blank"
+                    style="margin-left: 10px; background: transparent; color: #0077b5;"><i
+                        class="fa-brands fa-linkedin"></i> LinkedIn</a>
+            </div>
+            <div style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                <i class="fa-solid fa-location-dot"></i> Toronto, ON &bull;
+                <i class="fa-solid fa-envelope"></i> samritshrestha098@gmail.com
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about" style="padding: 4rem 0; background: var(--bg-color);">
+        <div class="container">
+            <h2 class="section-title">Professional Summary</h2>
+            <div class="glass-panel"
+                style="padding: 2rem; border-radius: 12px; max-width: 900px; margin: 0 auto; line-height: 1.8;">
+                <p>Recent Cybersecurity Graduate with a strong technical foundation in security operations, threat
+                    identification, and incident response. Experienced in developing AI-driven endpoint monitoring
+                    platforms and managing complex network infrastructures. Adept at translating technical security
+                    events into actionable business mitigation plans. Committed to promoting security awareness and
+                    maintaining robust security practices within the investment management sector.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="projects">
+        <div class="container">
+            <h2 class="section-title">Featured Work</h2>
+            <div class="project-grid">
+
+                <!-- TenshiGuard Project (Rich Detail) -->
+                <div class="project-card featured">
+                    <h3>TenshiGuard AI 🛡️</h3>
+                    <p>A comprehensive endpoint security platform leveraging AI for real-time threat detection and
+                        behavioral analysis. Features a custom agent for Windows/Linux and a centralized admin command
+                        center.</p>
+
+                    <ul class="tech-stack-list">
+                        <li><i class="fa-solid fa-server"></i> Python, Flask, SQLAlchemy (Backend)</li>
+                        <li><i class="fa-solid fa-desktop"></i> PowerShell, psutil (Agent)</li>
+                        <li><i class="fa-solid fa-brain"></i> Google Gemini AI, Scikit-learn</li>
+                        <li><i class="fa-solid fa-chart-line"></i> Chart.js, Bootstrap 5</li>
+                    </ul>
+
+                    <div class="tags">
+                        <span class="tag">Cybersecurity</span>
+                        <span class="tag">AI/ML</span>
+                        <span class="tag">Full-Stack</span>
+                    </div>
+
+                    <div class="actions" style="margin-top: 1.5rem;">
+                        <a href="https://github.com/TenshiGuard/TenshiGuard-Live" class="btn" target="_blank">View
+                            Source <i class="fa-brands fa-github"></i></a>
+                        <a href="/" class="btn" target="_blank"
+                            style="background:transparent; border:none; color: var(--text-secondary);">Live Demo <i
+                                class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- Ethical Hacking Labs -->
+                <div class="project-card">
+                    <h3>Ethical Hacking Labs</h3>
+                    <p>A repository of custom penetration testing scripts, CTF solutions, and vulnerability assessment
+                        tools used for educational purposes and security auditing.</p>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">Bash</span>
+                        <span class="tag">Network Security</span>
+                    </div>
+                    <a href="https://github.com/Samritsec/ethical-hacking-labs" class="btn" target="_blank">View Repo <i
+                            class="fa-brands fa-github"></i></a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Upload Modal -->
+    <div class="modal-overlay" id="uploadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Upload New Project</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="projectForm">
+                <div class="form-group">
+                    <label>Project Title</label>
+                    <input type="text" id="pTitle" class="form-input" required placeholder="e.g. AI Chatbot">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="pDesc" class="form-input" rows="3" required
+                        placeholder="Brief summary of the project..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Tags (comma separated)</label>
+                    <input type="text" id="pTags" class="form-input" placeholder="Python, React, AWS">
+                </div>
+                <div class="form-group">
+                    <label>Project Link</label>
+                    <input type="url" id="pLink" class="form-input" required placeholder="https://github.com/...">
+                </div>
+                <button type="submit" class="submit-btn"><i class="fa-solid fa-upload"></i> Add Project</button>
+            </form>
+        </div>
+    </div>
+
+    <section id="skills" class="skills">
+        <div class="container">
+            <h2 class="section-title">Technical Skills</h2>
+            <div class="skills-grid"
+                style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); text-align: left;">
+
+                <div class="skill-item">
+                    <h3 style="margin-bottom: 1rem; color: var(--accent-color);"><i
+                            class="fa-solid fa-shield-virus"></i> Security Operations</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Incident Response, Threat
+                        Identification, Remediation, Log Analysis, MSSP Collaboration.</p>
+                </div>
+
+                <div class="skill-item">
+                    <h3 style="margin-bottom: 1rem; color: var(--accent-color);"><i class="fa-solid fa-code"></i>
+                        Engineering & Automation</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Python (Flask), PowerShell, Bash, SQL,
+                        RESTful APIs, Google Gemini AI Integration.</p>
+                </div>
+
+                <div class="skill-item">
+                    <h3 style="margin-bottom: 1rem; color: var(--accent-color);"><i
+                            class="fa-solid fa-file-contract"></i> Governance & Compliance</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">IT Policy Education, Risk Assessment,
+                        Security Awareness Training, RBAC.</p>
+                </div>
+
+                <div class="skill-item">
+                    <h3 style="margin-bottom: 1rem; color: var(--accent-color);"><i
+                            class="fa-solid fa-network-wired"></i> Infrastructure</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Windows Server 2019-2022, Active
+                        Directory, Linux, TCP/IP, VPN, Virtualization.</p>
+                </div>
+
+                <div class="skill-item">
+                    <h3 style="margin-bottom: 1rem; color: var(--accent-color);"><i class="fa-solid fa-toolbox"></i>
+                        Tools</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Jira, Confluence, Git, Office 365, Power
+                        BI.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="container">
+            <div class="contact-links" style="margin-bottom: 2rem;">
+                <p>Ready to secure your infrastructure? Let's connect.</p>
+                <br>
+                <a href="https://github.com/Samritsec" target="_blank" class="contact-link"><i
+                        class="fa-brands fa-github"></i></a>
+                <a href="https://linkedin.com/in/samrit-shrestha" target="_blank" class="contact-link"><i
+                        class="fa-brands fa-linkedin"></i></a>
+                <a href="mailto:samritshrestha098@gmail.com" class="contact-link"><i
+                        class="fa-solid fa-envelope"></i></a>
+            </div>
+            <p>&copy; 2026 Samrit Shrestha. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
