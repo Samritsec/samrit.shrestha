@@ -6,20 +6,61 @@ document.addEventListener('DOMContentLoaded', () => {
     const projectsGrid = document.querySelector('.project-grid');
 
     // Modal Triggers
+    // Login specific elements
+    const loginModal = document.getElementById('loginModal');
+    const loginForm = document.getElementById('loginForm');
+    const closeLoginBtn = document.querySelector('.modal-close-login');
+
+    // Credentials (Client-side check)
+    const USER = "samrit.potfolio";
+    const PASS = "9140100459@Samrit";
+
+    // Modal Triggers
     uploadBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        modal.style.display = 'flex';
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+
+        if (isLoggedIn === 'true') {
+            modal.style.display = 'flex';
+        } else {
+            loginModal.style.display = 'flex';
+        }
     });
 
     closeBtn.addEventListener('click', () => {
         modal.style.display = 'none';
     });
 
+    closeLoginBtn.addEventListener('click', () => {
+        loginModal.style.display = 'none';
+    });
+
     window.addEventListener('click', (e) => {
         if (e.target === modal) {
             modal.style.display = 'none';
         }
+        if (e.target === loginModal) {
+            loginModal.style.display = 'none';
+        }
     });
+
+    // Login Handle
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const u = document.getElementById('username').value;
+        const p = document.getElementById('password').value;
+
+        if (u === USER && p === PASS) {
+            sessionStorage.setItem('isLoggedIn', 'true');
+            loginModal.style.display = 'none';
+            modal.style.display = 'flex'; // Open upload modal
+            loginForm.reset();
+        } else {
+            alert("Invalid Credentials");
+        }
+    });
+
+
 
     // Form Handle
     projectForm.addEventListener('submit', (e) => {
