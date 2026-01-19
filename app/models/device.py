@@ -39,6 +39,8 @@ class Device(db.Model):
     
     # Risk & Priority
     risk_level = db.Column(db.String(20), default="low")  # low, medium, high, critical
+    risk_score = db.Column(db.Integer, default=0)         # Numeric risk score (0-100+)
+    last_risk_update = db.Column(db.DateTime, default=datetime.utcnow)
     priority = db.Column(db.Integer, default=0)           # 0=Normal, 1=High, 2=Critical
 
     # ============================================================

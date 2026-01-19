@@ -4,209 +4,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TenshiGuard AI - Developer Portfolio</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/portfolio.css') }}">
+    <title>Samrit Shrestha - Cybersecurity Portfolio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='portfolio/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* Extra styles for detailed cards */
-        .tech-detail {
-            font-size: 0.9rem;
-            color: #94a3b8;
-            margin-top: 0.5rem;
-        }
-
-        .project-card,
-        .skill-item {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-        }
-
-        .section-desc {
-            max-width: 800px;
-            margin: 0 auto 3rem;
-            font-size: 1.1rem;
-            color: #cbd5e1;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <header>
         <div class="container">
             <nav>
-                <a href="#" class="logo">TenshiGuard<span style="color: var(--accent-color);">.Dev</span></a>
+                <a href="#" class="logo">Samrit.Sec</a>
                 <div class="nav-links">
                     <a href="#about">About</a>
-                    <a href="#modules">Architecture</a>
-                    <a href="#tech">Tech Stack</a>
-                    <a href="#ai">AI Engine</a>
-                    <a href="{{ url_for('dashboard.documentation') }}" class="special-link">Documentation (PDF)</a>
+                    <a href="#projects">Projects</a>
+                    <a href="#skills">Skills</a>
+                    <button id="uploadBtn" class="btn-upload"><i class="fa-solid fa-cloud-arrow-up"></i> Upload
+                        Project</button>
                 </div>
             </nav>
         </div>
     </header>
 
-    <section class="hero" id="about">
+    <section class="hero">
         <div class="container">
-            <div class="hero-content">
-                <h1>Next-Gen Endpoint Security</h1>
-                <p class="subtitle">Architected and built <strong>TenshiGuard AI</strong>, a comprehensive cybersecurity
-                    platform combining real-time telemetry, AI-driven threat detection, and cloud-native orchestration.
-                </p>
-                <div class="hero-btns">
-                    <a href="#modules" class="btn">Explore Architecture</a>
-                    <a href="https://github.com/TenshiGuard/TenshiGuard-Live" target="_blank" class="btn btn-outline"><i
-                            class="fa-brands fa-github"></i> View Source</a>
-                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline">Live Demo</a>
-                </div>
+            <h1>SAMRIT SHRESTHA</h1>
+            <p>Recent Cybersecurity Graduate | Security Operations | AI-Driven Security</p>
+            <div class="hero-actions">
+                <a href="#contact" class="btn">Contact Me</a>
+                <a href="https://github.com/Samritsec" class="btn" target="_blank"
+                    style="margin-left: 10px; background: transparent;"><i class="fa-brands fa-github"></i> GitHub</a>
+                <a href="https://linkedin.com/in/samrit-shrestha" class="btn" target="_blank"
+                    style="margin-left: 10px; background: transparent; color: #0077b5;"><i
+                        class="fa-brands fa-linkedin"></i> LinkedIn</a>
+            </div>
+            <div style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                <i class="fa-solid fa-location-dot"></i> Toronto, ON &bull;
+                <i class="fa-solid fa-envelope"></i> samritshrestha098@gmail.com
             </div>
         </div>
     </section>
 
-    <section id="modules" class="projects">
+    <section id="about" class="about" style="padding: 4rem 0; background: var(--bg-color);">
         <div class="container">
-            <h2 class="section-title">System Architecture & Modules</h2>
-            <p class="section-desc">TenshiGuard is not just a tool; it's an ecosystem designed for scalability,
-                performance, and autonomy. Here are the core components I built:</p>
+            <h2 class="section-title">Professional Summary</h2>
+            <div class="glass-panel"
+                style="padding: 2rem; border-radius: 12px; max-width: 900px; margin: 0 auto; line-height: 1.8;">
+                <p>Recent Cybersecurity Graduate with a strong technical foundation in security operations, threat
+                    identification, and incident response. Experienced in developing AI-driven endpoint monitoring
+                    platforms and managing complex network infrastructures. Adept at translating technical security
+                    events into actionable business mitigation plans. Committed to promoting security awareness and
+                    maintaining robust security practices within the investment management sector.</p>
+            </div>
+        </div>
+    </section>
 
+    <section id="projects" class="projects">
+        <div class="container">
+            <h2 class="section-title">Featured Work</h2>
             <div class="project-grid">
-                <!-- Module 1: The Agent -->
+
+                <!-- TenshiGuard Project (Rich Detail) -->
+                <div class="project-card featured">
+                    <h3>TenshiGuard AI 🛡️</h3>
+                    <p>A comprehensive endpoint security platform leveraging AI for real-time threat detection and
+                        behavioral analysis. Features a custom agent for Windows/Linux and a centralized admin command
+                        center.</p>
+
+                    <ul class="tech-stack-list">
+                        <li><i class="fa-solid fa-server"></i> Python, Flask, SQLAlchemy (Backend)</li>
+                        <li><i class="fa-solid fa-desktop"></i> PowerShell, psutil (Agent)</li>
+                        <li><i class="fa-solid fa-brain"></i> Google Gemini AI, Scikit-learn</li>
+                        <li><i class="fa-solid fa-chart-line"></i> Chart.js, Bootstrap 5</li>
+                    </ul>
+
+                    <div class="tags">
+                        <span class="tag">Cybersecurity</span>
+                        <span class="tag">AI/ML</span>
+                        <span class="tag">Full-Stack</span>
+                    </div>
+
+                    <div class="actions" style="margin-top: 1.5rem;">
+                        <a href="https://github.com/TenshiGuard/TenshiGuard-Live" class="btn" target="_blank">View
+                            Source <i class="fa-brands fa-github"></i></a>
+                        <a href="/" class="btn" target="_blank"
+                            style="background:transparent; border:none; color: var(--text-secondary);">Live Demo <i
+                                class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- Ethical Hacking Labs -->
                 <div class="project-card">
-                    <div class="card-icon"><i class="fa-brands fa-windows"></i></div>
-                    <h3>Intelligent Endpoint Agent</h3>
-                    <p>A lightweight, Python/PowerShell-based agent that runs on client devices.</p>
-                    <p class="tech-detail"><strong>Purpose:</strong> To act as the eyes and ears on the ground,
-                        capturing telemetry that network firewalls miss.</p>
-                    <p class="tech-detail"><strong>How it works:</strong> It uses `threading` for concurrent monitoring
-                        of File Integrity (Watchdog), Process Creation (WMI), and Network Connections (Psutil), sending
-                        data every 15s.</p>
+                    <h3>Ethical Hacking Labs</h3>
+                    <p>A repository of custom penetration testing scripts, CTF solutions, and vulnerability assessment
+                        tools used for educational purposes and security auditing.</p>
                     <div class="tags">
                         <span class="tag">Python</span>
-                        <span class="tag">PowerShell</span>
-                        <span class="tag">System API</span>
+                        <span class="tag">Bash</span>
+                        <span class="tag">Network Security</span>
                     </div>
+                    <a href="https://github.com/Samritsec/ethical-hacking-labs" class="btn" target="_blank">View Repo <i
+                            class="fa-brands fa-github"></i></a>
                 </div>
 
-                <!-- Module 2: The Core -->
-                <div class="project-card">
-                    <div class="card-icon"><i class="fa-solid fa-brain"></i></div>
-                    <h3>AI Correlation Engine</h3>
-                    <p>The central brain that processes and correlates disparate events.</p>
-                    <p class="tech-detail"><strong>Purpose:</strong> To reduce alert fatigue by filtering noise and
-                        identifying complex attack patterns.</p>
-                    <p class="tech-detail"><strong>How it works:</strong> Uses heuristic chains (e.g., 5 failures + 1
-                        success = Brute Force) and Scikit-learn for anomaly detection, assigning a dynamic risk score to
-                        each device.</p>
-                    <div class="tags">
-                        <span class="tag">Scikit-Learn</span>
-                        <span class="tag">Heuristics</span>
-                        <span class="tag">Data Pipelines</span>
-                    </div>
-                </div>
-
-                <!-- Module 3: The Dashboard -->
-                <div class="project-card">
-                    <div class="card-icon"><i class="fa-solid fa-chart-line"></i></div>
-                    <h3>Command Center Dashboard</h3>
-                    <p>A responsive, real-time admin interface for visibility and control.</p>
-                    <p class="tech-detail"><strong>Purpose:</strong> To provide a "Single Pane of Glass" for security
-                        teams.</p>
-                    <p class="tech-detail"><strong>How it works:</strong> Built with Flask and Vanilla JS (no heavy
-                        frameworks) for max speed. Features live WebSocket-like polling and interactive Chart.js
-                        visualizations.</p>
-                    <div class="tags">
-                        <span class="tag">Flask</span>
-                        <span class="tag">Chart.js</span>
-                        <span class="tag">Bootstrap 5</span>
-                    </div>
-                </div>
             </div>
         </div>
     </section>
 
-    <section id="tech" class="skills">
+    <!-- Upload Modal -->
+    <div class="modal-overlay" id="uploadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Upload New Project</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="projectForm">
+                <div class="form-group">
+                    <label>Project Title</label>
+                    <input type="text" id="pTitle" class="form-input" required placeholder="e.g. AI Chatbot">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="pDesc" class="form-input" rows="3" required
+                        placeholder="Brief summary of the project..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Tags (comma separated)</label>
+                    <input type="text" id="pTags" class="form-input" placeholder="Python, React, AWS">
+                </div>
+                <div class="form-group">
+                    <label>Project Link</label>
+                    <input type="url" id="pLink" class="form-input" required placeholder="https://github.com/...">
+                </div>
+                <button type="submit" class="submit-btn"><i class="fa-solid fa-upload"></i> Add Project</button>
+            </form>
+        </div>
+    </div>
+
+    <section id="skills" class="skills">
         <div class="container">
-            <h2 class="section-title">Technology Stack & Platforms</h2>
-            <p class="section-desc">Selected for performance, reliability, and modernize serverless capabilities.</p>
-            <div class="skills-grid">
+            <h2 class="section-title">Technical Skills</h2>
+            <div class="skills-grid"
+                style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); text-align: left;">
+
                 <div class="skill-item">
-                    <i class="fa-brands fa-python"></i>
-                    <h3>Python 3.9+ (Flask)</h3>
-                    <p><strong>Why:</strong> Unmatched libraries for Cybersec (Scapy, PyWin32) and AI (Scikit). Flask
-                        allows rapid API development.</p>
+                    <h3 style="margin-bottom: 1rem; color: var(--accent-color);"><i
+                            class="fa-solid fa-shield-virus"></i> Security Operations</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Incident Response, Threat
+                        Identification, Remediation, Log Analysis, MSSP Collaboration.</p>
                 </div>
+
                 <div class="skill-item">
-                    <i class="fa-solid fa-database"></i>
-                    <h3>PostgreSQL (Neon)</h3>
-                    <p><strong>Why:</strong> Robust relational data structure with JSONB support for unstructured logs.
-                        Neon provides serverless scaling.</p>
+                    <h3 style="margin-bottom: 1rem; color: var(--accent-color);"><i class="fa-solid fa-code"></i>
+                        Engineering & Automation</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Python (Flask), PowerShell, Bash, SQL,
+                        RESTful APIs, Google Gemini AI Integration.</p>
                 </div>
+
                 <div class="skill-item">
-                    <i class="fa-solid fa-cloud"></i>
-                    <h3>Vercel</h3>
-                    <p><strong>Platform:</strong> Serverless hosting for the backend.</p>
-                    <p><strong>Why:</strong> Zero maintenance, auto-scaling, and global edge network delivery.</p>
+                    <h3 style="margin-bottom: 1rem; color: var(--accent-color);"><i
+                            class="fa-solid fa-file-contract"></i> Governance & Compliance</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">IT Policy Education, Risk Assessment,
+                        Security Awareness Training, RBAC.</p>
                 </div>
+
                 <div class="skill-item">
-                    <i class="fa-solid fa-shield-halved"></i>
-                    <h3>Cybersecurity Principles</h3>
-                    <p><strong>Concepts:</strong> implemented Least Privilege, Multi-Tenancy, and Defense in Depth.</p>
+                    <h3 style="margin-bottom: 1rem; color: var(--accent-color);"><i
+                            class="fa-solid fa-network-wired"></i> Infrastructure</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Windows Server 2019-2022, Active
+                        Directory, Linux, TCP/IP, VPN, Virtualization.</p>
                 </div>
+
+                <div class="skill-item">
+                    <h3 style="margin-bottom: 1rem; color: var(--accent-color);"><i class="fa-solid fa-toolbox"></i>
+                        Tools</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Jira, Confluence, Git, Office 365, Power
+                        BI.</p>
+                </div>
+
             </div>
         </div>
     </section>
 
-    <section id="ai" class="projects">
+    <footer id="contact">
         <div class="container">
-            <h2 class="section-title">AI & The End Goal</h2>
-            <p class="section-desc">Moving from "Detection" to "Prediction" and "Self-Healing".</p>
-
-            <div class="project-grid" style="grid-template-columns: 1fr 1fr; gap: 2rem;">
-                <div class="project-card">
-                    <div class="card-icon"><i class="fa-solid fa-robot"></i></div>
-                    <h3>How the AI Works</h3>
-                    <p>TenshiGuard uses a <strong>Hybrid Detection Model</strong>:</p>
-                    <ul style="color: #94a3b8; font-size: 0.9rem; list-style-position: inside; margin-top: 1rem;">
-                        <li><strong>Signature-Based:</strong> Instant blocks for known malware hashes (like traditional
-                            AV).</li>
-                        <li><strong>Behavioral Analysis:</strong> It watches <em>what</em> a program does, not just who
-                            it is. (e.g., "Why is Notepad connecting to the internet?").</li>
-                        <li><strong>Risk Scoring:</strong> A dynamic score (0-100) that rises with threats and decays
-                            over time, helping admins prioritize the fire.</li>
-                    </ul>
-                </div>
-                <div class="project-card">
-                    <div class="card-icon"><i class="fa-solid fa-bullseye"></i></div>
-                    <h3>The Project Goal</h3>
-                    <p>To build a <strong>Fully Autonomous Security Analyst</strong>.</p>
-                    <p class="tech-detail" style="margin-top: 1rem;">Often, human analysts are too slow to stop a
-                        ransomware encryption process (which takes milliseconds). Our goal is to create an agent smart
-                        enough to detect the anomaly and <strong>kill the process autonomously</strong> in sub-second
-                        time, alerting the human only after the threat is neutralized.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="contact" class="contact">
-        <div class="container">
-            <h2 class="section-title">Ready to Secure the Future?</h2>
-            <div class="contact-links">
-                <a href="https://github.com/TenshiGuard/TenshiGuard-Live" target="_blank" class="contact-link"
-                    title="GitHub"><i class="fa-brands fa-github"></i></a>
-                <a href="mailto:contact@tenshiguard.ai" class="contact-link" title="Email"><i
+            <div class="contact-links" style="margin-bottom: 2rem;">
+                <p>Ready to secure your infrastructure? Let's connect.</p>
+                <br>
+                <a href="https://github.com/Samritsec" target="_blank" class="contact-link"><i
+                        class="fa-brands fa-github"></i></a>
+                <a href="https://linkedin.com/in/samrit-shrestha" target="_blank" class="contact-link"><i
+                        class="fa-brands fa-linkedin"></i></a>
+                <a href="mailto:samritshrestha098@gmail.com" class="contact-link"><i
                         class="fa-solid fa-envelope"></i></a>
             </div>
-        </div>
-    </section>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 TenshiGuard AI. Built with ❤️ and ☕.</p>
+            <p>&copy; 2026 Samrit Shrestha. All rights reserved.</p>
         </div>
     </footer>
+
+    <script src="{{ url_for('static', filename='portfolio/script.js') }}"></script>
 </body>
 
 </html>
