@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (u === USER && p === PASS) {
             sessionStorage.setItem('isLoggedIn', 'true');
+            enableAdminMode(); // Enable delete buttons
             loginModal.style.display = 'none';
             modal.style.display = 'flex'; // Open upload modal
             loginForm.reset();
@@ -87,6 +88,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Add to Grid (Prepend or Append)
         const firstCard = projectsGrid.firstElementChild;
         projectsGrid.insertBefore(card, firstCard.nextSibling); // Insert after the first one (TenshiGuard)
+
+        // If admin, add delete button immediately
+        if (sessionStorage.getItem('isLoggedIn') === 'true') {
+            enableAdminMode();
+        }
 
         // Reset & Close
         projectForm.reset();
