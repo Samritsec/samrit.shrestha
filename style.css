@@ -202,6 +202,26 @@ nav {
     font-size: 0.95rem;
 }
 
+.delete-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    color: #ff5b5b;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: all 0.2s;
+    z-index: 10;
+}
+
+.delete-btn:hover {
+    color: #ff0000;
+    transform: scale(1.1);
+    opacity: 1;
+}
+
 .tags {
     display: flex;
     flex-wrap: wrap;
